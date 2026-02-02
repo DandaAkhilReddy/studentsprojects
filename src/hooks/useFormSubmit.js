@@ -2,6 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+const WEB3FORMS_KEY = '872126ea-0595-4349-9c5b-4e190cc0d839';
 
 export const useFormSubmit = (onSuccess) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +18,7 @@ export const useFormSubmit = (onSuccess) => {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
+          access_key: WEB3FORMS_KEY,
           subject: `New ${formData.serviceType === 'project' ? 'Project' : 'Assignment'} Request - ${formData.name}`,
           from_name: 'AgentChains.ai Website',
 
