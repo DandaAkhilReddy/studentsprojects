@@ -1,0 +1,12 @@
+export const reviews = [
+  { name: 'Arjun Patel', university: 'University of Kansas, USA', rating: 5, text: 'I was struggling with my Software Engineering project for weeks. AgentChains delivered everything in 5 days - perfect formatting, clean code, all UML diagrams. Got an A!', avatar: 'AP' },
+  { name: 'Priya Sharma', university: 'California State University, Fresno', rating: 5, text: 'The documentation was EXACTLY what my professor wanted. Headers, TOC, page numbers - everything matched the template perfectly. Highly recommend!', avatar: 'PS' },
+  { name: 'Rahul Krishnamurthy', university: 'University of Texas at Arlington', rating: 5, text: 'Best decision I made this semester. The code quality was excellent - 3500 lines, well-commented, and actually ran without errors. 24/7 support was amazing!', avatar: 'RK' },
+  { name: 'Ananya Reddy', university: 'Arizona State University', rating: 5, text: 'My teammates disappeared mid-semester. AgentChains saved my grade. All 8 documents delivered on time with unlimited revisions!', avatar: 'AR' },
+  { name: 'Vikram Mehta', university: 'University of Birmingham, UK', rating: 5, text: 'The SRS document alone was worth it - 45 requirements, 6 use cases with diagrams. Professor said it was one of the best submissions!', avatar: 'VM' },
+  { name: 'Deepika Iyer', university: 'San Jose State University', rating: 5, text: 'I tried doing the project myself but formatting kept getting rejected. AgentChains fixed everything perfectly. Submitted with confidence!', avatar: 'DI' },
+  { name: 'Karthik Nair', university: 'University of Manchester, UK', rating: 5, text: 'The PPT presentation was amazing! Professional slides, speaker notes, everything. I referred 3 friends and got my project FREE!', avatar: 'KN' },
+  { name: 'Sneha Gupta', university: 'Georgia State University', rating: 5, text: 'Communication was excellent - they responded within minutes even at 2 AM. From requirements to deployment, they guided me through everything!', avatar: 'SG' },
+  { name: 'Aditya Verma', university: 'University of Leicester, UK', rating: 5, text: 'Was clueless about project ideas. They suggested trending topics and delivered a complete AI chatbot project. Absolutely professional service!', avatar: 'AV' },
+  { name: 'Meera Krishnan', university: 'University of Houston', rating: 5, text: 'Every call was answered, every doubt was cleared. No ghosting like other vendors. This is how professional service should be!', avatar: 'MK' }
+];
