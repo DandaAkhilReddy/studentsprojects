@@ -3,24 +3,45 @@ import { Link } from 'react-router-dom';
 const WelcomePopup = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl p-6 max-w-md w-full border border-gray-700 shadow-2xl relative">
+      <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl relative overflow-hidden">
+        {/* TAMUCC Trust Banner */}
+        <div className="bg-gradient-to-r from-[#500000] to-[#6B0000] px-6 py-4 text-center border-b border-[#800000]">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className="text-2xl">🏛️</span>
+            <h3 className="text-white font-bold text-base">
+              Trusted by Texas A&M University Alumni
+            </h3>
+          </div>
+          <p className="text-[#F5C518] font-bold text-sm mb-2">
+            5+ Years Serving TAMU Students
+          </p>
+          <div className="flex flex-wrap justify-center gap-1.5">
+            <span className="bg-white/15 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+              Exclusive TAMUCC Discounts
+            </span>
+            <span className="bg-white/15 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+              Your Frameworks & Projects
+            </span>
+          </div>
+        </div>
+
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl leading-none transition"
+          className="absolute top-3 right-3 text-white/60 hover:text-white text-2xl leading-none transition z-10"
         >
           &times;
         </button>
 
         {/* Content */}
-        <div className="text-center">
+        <div className="text-center p-6">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-400 px-3 py-1 rounded-full text-xs font-bold mb-4">
             <span>🆓</span> FREE TOOL — $49 VALUE
           </div>
 
           {/* Icon */}
-          <div className="text-6xl mb-4">📄</div>
+          <div className="text-5xl mb-3">📄</div>
 
           {/* Title */}
           <h2 className="text-2xl font-bold mb-2">
@@ -42,7 +63,7 @@ const WelcomePopup = ({ onClose }) => {
           </div>
 
           {/* Feature list */}
-          <ul className="text-left space-y-2 mb-6 max-w-xs mx-auto">
+          <ul className="text-left space-y-2 mb-5 max-w-xs mx-auto">
             <li className="flex items-center gap-2 text-sm text-gray-300">
               <span className="text-green-400">✓</span>
               Job Description keyword matching
@@ -69,7 +90,7 @@ const WelcomePopup = ({ onClose }) => {
           {/* Maybe later link */}
           <button
             onClick={onClose}
-            className="mt-4 text-gray-500 hover:text-gray-400 text-sm transition"
+            className="mt-3 text-gray-500 hover:text-gray-400 text-sm transition"
           >
             Maybe later
           </button>
