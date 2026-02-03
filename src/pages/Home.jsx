@@ -14,6 +14,7 @@ import AssignmentBanner from '../components/sections/AssignmentBanner';
 import Pricing from '../components/sections/Pricing';
 import ReferralProgram from '../components/sections/ReferralProgram';
 import Deliverables from '../components/sections/Deliverables';
+import FreeToolsShowcase from '../components/sections/FreeToolsShowcase';
 import Reviews from '../components/sections/Reviews';
 import HowItWorks from '../components/sections/HowItWorks';
 import CTA from '../components/sections/CTA';
@@ -67,6 +68,7 @@ const Home = () => {
       <AssignmentBanner onOrder={openForm} />
       <Pricing onGetStarted={openForm} />
       <Deliverables />
+      <FreeToolsShowcase />
       <Reviews />
       <HowItWorks />
       <CTA onGetStarted={openForm} />
