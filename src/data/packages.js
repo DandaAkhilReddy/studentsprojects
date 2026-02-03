@@ -3,7 +3,7 @@ export const packages = [
     id: 'code',
     name: 'Code Only',
     price: 299,
-    originalPrice: 598,
+    originalPrice: 599,
     icon: '💻',
     features: [
       'Running application (3000+ lines)',
@@ -18,7 +18,7 @@ export const packages = [
     id: 'docs',
     name: 'Docs Only',
     price: 349,
-    originalPrice: 698,
+    originalPrice: 699,
     icon: '📄',
     features: [
       'Team Project Proposal',
@@ -35,7 +35,7 @@ export const packages = [
     id: 'complete',
     name: 'Complete Package',
     price: 399,
-    originalPrice: 798,
+    originalPrice: 799,
     icon: '🚀',
     popular: true,
     features: [

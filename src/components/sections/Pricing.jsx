@@ -5,7 +5,7 @@ const Pricing = ({ onGetStarted }) => {
     <section id="pricing" className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-4">
-          <span className="inline-block bg-red-500/20 text-red-400 px-4 py-1.5 rounded-full text-sm font-bold animate-pulse">🔥 50% OFF — Limited Time!</span>
+          <span className="inline-block bg-red-500/20 text-red-400 px-5 py-2 rounded-full text-sm font-bold animate-pulse border border-red-500/30">🔥 50% OFF All Packages — Limited Time Only!</span>
         </div>
         <h2 className="text-3xl font-bold text-center mb-3">Simple, Transparent Pricing</h2>
         <p className="text-gray-400 text-center mb-12">No hidden fees. No surprises. Just results.</p>
@@ -13,18 +13,24 @@ const Pricing = ({ onGetStarted }) => {
         <div className="grid md:grid-cols-3 gap-6">
           {packages.map((pkg) => (
             <div key={pkg.id} className={`relative bg-gradient-to-b from-gray-800 to-gray-800/50 rounded-2xl p-6 border-2 transition-all hover:transform hover:scale-105 ${pkg.popular ? 'border-orange-500 shadow-xl shadow-orange-500/20' : 'border-gray-700 hover:border-gray-600'}`}>
+              {/* 50% OFF ribbon */}
+              <div className="absolute -top-3 -left-3 z-10">
+                <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg shadow-green-500/40">50% OFF</span>
+              </div>
+
               {pkg.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">⭐ MOST POPULAR</span>
                 </div>
               )}
 
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 mt-2">
                 <span className="text-4xl">{pkg.icon}</span>
                 <h3 className="text-xl font-bold mt-3">{pkg.name}</h3>
                 <div className="mt-3">
                   <span className="text-gray-500 line-through text-sm">${pkg.originalPrice}</span>
                   <div className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">${pkg.price}</div>
+                  <span className="inline-block mt-1 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full">You save ${pkg.originalPrice - pkg.price}!</span>
                 </div>
               </div>
 
@@ -43,18 +49,25 @@ const Pricing = ({ onGetStarted }) => {
         </div>
 
         {/* Assignment Card */}
-        <div className="mt-10 bg-gradient-to-r from-green-900/30 to-emerald-900/20 rounded-2xl p-8 border border-green-500/30 text-center">
+        <div className="mt-10 bg-gradient-to-r from-green-900/30 via-emerald-900/20 to-teal-900/30 rounded-2xl p-8 border-2 border-green-500/40 relative overflow-hidden">
+          <div className="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-4 py-1.5 rounded-bl-xl">BEST VALUE</div>
           <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <div><span className="text-4xl">📚</span></div>
-            <div>
-              <h3 className="text-xl font-bold mb-1">Individual Assignments</h3>
-              <p className="text-gray-400">Any subject, any topic — professionally done</p>
+            <div><span className="text-5xl">📚</span></div>
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-bold mb-1">Individual Assignments</h3>
+              <p className="text-gray-300">Any subject, any topic — professionally done</p>
+              <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
+                <span className="bg-blue-500/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full">Any Subject</span>
+                <span className="bg-purple-500/20 text-purple-400 text-xs font-bold px-3 py-1 rounded-full">Professional Quality</span>
+                <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full">Fast Delivery</span>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-400">$25–$50</div>
-              <div className="text-gray-400 text-sm">subject-wise pricing</div>
+            <div className="text-center shrink-0">
+              <div className="text-sm text-gray-400 mb-1">Starting from</div>
+              <div className="text-5xl font-bold text-green-400">$25</div>
+              <div className="text-gray-400 text-sm">per assignment</div>
             </div>
-            <button onClick={onGetStarted} className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-bold transition">Order Now</button>
+            <button onClick={onGetStarted} className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 py-3.5 rounded-xl font-bold text-lg transition shadow-lg shadow-green-500/25 shrink-0">Order Now</button>
           </div>
         </div>
       </div>

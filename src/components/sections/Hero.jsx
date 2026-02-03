@@ -30,11 +30,25 @@ const Hero = ({ onGetStarted }) => {
           <span className="bg-gray-800/80 backdrop-blur px-4 py-2 rounded-full text-sm border border-gray-700">✓ 24/7 Support</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button onClick={onGetStarted} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-orange-500/30 transition-all transform hover:scale-105">Get Complete Package — $399</button>
-          <button onClick={onGetStarted} className="bg-gray-800 hover:bg-gray-700 border border-gray-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all">Order Assignment — From $25</button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="relative">
+            <span className="absolute -top-3 -right-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg shadow-green-500/40 animate-bounce z-10">50% OFF</span>
+            <button onClick={onGetStarted} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-orange-500/30 transition-all transform hover:scale-105">
+              Complete Package — <span className="line-through opacity-60 text-base">$799</span> $399
+            </button>
+          </div>
+          <div className="relative">
+            <span className="absolute -top-3 -right-3 bg-yellow-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-full shadow-lg z-10">HOT</span>
+            <button onClick={onGetStarted} className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-green-500/30 transition-all transform hover:scale-105">
+              Order Assignment — From <span className="text-yellow-300 text-xl">$25</span>
+            </button>
+          </div>
         </div>
-        <p className="text-gray-500 mt-4 text-sm">💰 Save $399 — 50% OFF Complete Package (was $798)</p>
+
+        <div className="mt-5 flex flex-wrap justify-center gap-3">
+          <span className="bg-green-500/20 text-green-400 px-4 py-1.5 rounded-full text-sm font-bold border border-green-500/30">You save $400! Was $799</span>
+          <span className="bg-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-500/30">Assignments from just $25</span>
+        </div>
       </div>
     </section>
   );

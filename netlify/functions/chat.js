@@ -51,9 +51,9 @@ const checkRateLimit = (ip) => {
 const SYSTEM_PROMPT = `You are the AgentChains.ai assistant. Be concise (2-3 sentences max).
 
 Services (50% OFF all packages!):
-- Code Only: $299 (was $598 — 3000+ lines of code)
-- Docs Only: $349 (was $698 — 8 documents + PPT)
-- Complete Package: $399 (was $798 — code + docs + PPT)
+- Code Only: $299 (was $599 — 3000+ lines of code)
+- Docs Only: $349 (was $699 — 8 documents + PPT)
+- Complete Package: $399 (was $799 — code + docs + PPT, save $400!)
 - Individual Assignments: $25-$50 (subject-wise)
 
 Process: Submit request → Get quote → Pay 50% → Receive project → Pay remaining
