@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 
 // Firebase configuration
 // IMPORTANT: Replace these with your actual Firebase project credentials
@@ -16,7 +16,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore
-export const db = getFirestore(app);
+// Initialize Firestore with long-polling to avoid WebSocket channel errors
+// (this app only uses one-time reads/writes, not real-time listeners)
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+});
 
 export default app;
