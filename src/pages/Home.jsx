@@ -22,6 +22,7 @@ import CTA from '../components/sections/CTA';
 import ContactForm from '../components/ContactForm';
 import WelcomePopup from '../components/WelcomePopup';
 import FloatingReferralCTA from '../components/FloatingReferralCTA';
+import ChatbotWidget from '../components/ChatbotWidget';
 
 const Home = () => {
   const [showForm, setShowForm] = useState(false);
@@ -52,6 +53,9 @@ const Home = () => {
 
       {/* Floating CTAs */}
       <FloatingReferralCTA />
+
+      {/* AI Chatbot */}
+      <ChatbotWidget />
 
       <Navbar onGetStarted={openForm} />
       <Hero onGetStarted={openForm} />
