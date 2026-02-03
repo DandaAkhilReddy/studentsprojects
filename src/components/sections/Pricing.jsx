@@ -48,8 +48,8 @@ const Pricing = ({ onGetStarted }) => {
               <p className="text-gray-400">Any subject, any topic — professionally done</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-green-400">$49</div>
-              <div className="text-gray-400 text-sm">per assignment</div>
+              <div className="text-4xl font-bold text-green-400">$25–$50</div>
+              <div className="text-gray-400 text-sm">subject-wise pricing</div>
             </div>
             <button onClick={onGetStarted} className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-bold transition">Order Now</button>
           </div>

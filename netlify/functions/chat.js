@@ -54,7 +54,7 @@ Services:
 - Code Only: $199 (3000+ lines of code)
 - Docs Only: $299 (8 documents + PPT)
 - Complete Package: $399 (code + docs + PPT)
-- Individual Assignments: $49 each
+- Individual Assignments: $25-$50 (subject-wise)
 
 Process: Submit request → Get quote → Pay 50% → Receive project → Pay remaining
 

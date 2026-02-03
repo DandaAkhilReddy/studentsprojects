@@ -62,7 +62,7 @@ const ContactForm = ({ onClose }) => {
                 className={`p-4 rounded-xl border-2 text-center transition-all ${formData.serviceType === 'assignment' ? 'border-green-500 bg-green-500/20' : 'border-gray-600 hover:border-gray-500'}`}>
                 <span className="text-2xl block mb-1">📚</span>
                 <span className="font-bold">Assignment</span>
-                <span className="text-xs text-gray-400 block">Only $49</span>
+                <span className="text-xs text-gray-400 block">From $25</span>
               </button>
             </div>
           </div>
