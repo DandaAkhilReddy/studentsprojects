@@ -37,7 +37,7 @@ const FloatingReferralCTA = () => {
               style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
             >
               <span className="font-bold text-white text-sm tracking-wide group-hover:text-yellow-200 transition">
-                💰 Refer & Earn $50
+                💰 Refer & Earn $50+
               </span>
             </Link>
           </div>
@@ -62,7 +62,7 @@ const FloatingReferralCTA = () => {
               style={{ writingMode: 'vertical-lr' }}
             >
               <span className="font-bold text-white text-sm tracking-wide group-hover:text-yellow-200 transition">
-                Get $50 →
+                Get $50 Off →
               </span>
             </Link>
           </div>

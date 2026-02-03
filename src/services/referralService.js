@@ -157,7 +157,7 @@ export const useReferralCode = async (code, friendName, friendEmail, friendPhone
       usedAt: serverTimestamp(),
       status: 'pending', // pending, verified, paid
       referrerReward: 50,
-      friendReward: 50
+      friendDiscount: 50
     };
 
     const referralRef = doc(collection(db, 'referrals'));
@@ -176,7 +176,7 @@ export const useReferralCode = async (code, friendName, friendEmail, friendPhone
         referrerName: validation.referrer.name,
         rewards: {
           referrer: 50,
-          friend: 50
+          friendDiscount: 50
         }
       }
     };

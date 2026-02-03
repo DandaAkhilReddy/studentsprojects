@@ -58,7 +58,7 @@ const Referral = () => {
         if (result.isExisting) {
           toast.success('Welcome back! Here\'s your existing referral code.');
         } else {
-          toast.success('You\'re now a referral partner! Share your code to earn $50 per referral.');
+          toast.success('You\'re now a referral partner! Share your code to earn $50+ per referral.');
         }
       } else {
         toast.error(result.error || 'Something went wrong. Please try again.');
@@ -83,7 +83,7 @@ const Referral = () => {
     setCodeValidation(result);
 
     if (result.valid) {
-      toast.success(`Valid code from ${result.referrer.name}! You'll both get $50.`);
+      toast.success(`Valid code from ${result.referrer.name}! You'll get $50 off your order!`);
     } else {
       toast.error(result.error || 'Invalid referral code');
     }
@@ -105,7 +105,7 @@ const Referral = () => {
       );
 
       if (result.success) {
-        toast.success(`Awesome! You and ${result.data.referrerName} will both receive $50!`);
+        toast.success(`Awesome! You get $50 off! ${result.data.referrerName} earns a reward too!`);
         setFriendForm({ code: '', name: '', email: '', phone: '' });
         setCodeValidation(null);
       } else {
@@ -130,19 +130,19 @@ const Referral = () => {
   const faqs = [
     {
       q: "How does the referral program work?",
-      a: "Register to get your unique code. Share it with friends. When they sign up using your code, you BOTH get $50 instantly!"
+      a: "Register to get your unique code. Share it with friends. When they sign up using your code, you earn $50 (first) or $100 (subsequent). Your friend gets $50 off their order!"
     },
     {
       q: "Do I need to be a customer to earn referral money?",
-      a: "No! Anyone can register and earn $50 per referral. You don't need to use our services to participate."
+      a: "No! Anyone can register and earn $50–$100 per referral. You don't need to use our services to participate."
     },
     {
       q: "When do we get paid?",
-      a: "Both you and your friend receive $50 once we verify the referral. Payment is processed within 24-48 hours."
+      a: "You receive your reward once we verify the referral. Payment is processed within 24-48 hours."
     },
     {
       q: "Is there a limit to how many people I can refer?",
-      a: "No limit! Refer as many people as you want. Each successful referral = $50 for you and $50 for your friend."
+      a: "No limit! Each referral earns you $50 (first) or $100 (additional). Your friends each get $50 off their order."
     },
     {
       q: "What about weekly projects?",
@@ -162,7 +162,7 @@ const Referral = () => {
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <Link to="/tools" className="text-orange-400 hover:text-orange-300 text-sm font-medium transition">Free Tools</Link>
-            <span className="text-green-400 text-sm font-medium">💰 Earn $50</span>
+            <span className="text-green-400 text-sm font-medium">💰 Earn $50+</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
@@ -178,10 +178,10 @@ const Referral = () => {
             💰 Referral Program — Everyone Wins!
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            You Get <span className="text-green-400">$50</span> + Friend Gets <span className="text-green-400">$50</span>
+            Earn <span className="text-green-400">$50–$100</span> Per Referral
           </h1>
           <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-            Share your unique code with friends. When they sign up, <span className="text-green-400 font-bold">BOTH of you get $50 instantly</span>.
+            <span className="text-green-400 font-bold">$50 for your first, $100 for each after.</span> Your friend gets $50 off!
           </p>
           <p className="text-lg text-gray-400 mb-6">
             No limit on referrals — <span className="text-yellow-400 font-bold">refer more, earn more!</span>
@@ -225,8 +225,8 @@ const Referral = () => {
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">$</div>
-              <h3 className="font-bold mb-1">Both Get $50!</h3>
-              <p className="text-sm text-gray-400">You and your friend each receive $50</p>
+              <h3 className="font-bold mb-1">Both Win!</h3>
+              <p className="text-sm text-gray-400">You earn cash, friend gets $50 off</p>
             </div>
           </div>
         </div>
@@ -309,11 +309,11 @@ const Referral = () => {
                     <ul className="space-y-2 text-sm text-gray-300">
                       <li className="flex items-center gap-2">
                         <span className="text-green-400">✓</span>
-                        You get <span className="font-bold text-green-400">$50</span> instantly
+                        You earn <span className="font-bold text-green-400">$50</span> (1st) or <span className="font-bold text-green-400">$100</span> (2nd+)
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-green-400">✓</span>
-                        Your friend gets <span className="font-bold text-green-400">$50</span> instantly
+                        Your friend gets <span className="font-bold text-green-400">$50 off</span> their order
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-yellow-400">★</span>
@@ -325,7 +325,7 @@ const Referral = () => {
                   <div className="flex gap-4">
                     <button
                       onClick={() => {
-                        const text = `Use my referral code ${generatedCode} at AgentChains.ai and we BOTH get $50! Sign up here: ${window.location.href}`;
+                        const text = `Use my referral code ${generatedCode} at AgentChains.ai — you get $50 off and I earn rewards! Sign up here: ${window.location.href}`;
                         navigator.clipboard.writeText(text);
                         toast.success('Share message copied!');
                       }}
@@ -353,7 +353,7 @@ const Referral = () => {
           {activeTab === 'use' && (
             <div>
               <h2 className="text-2xl font-bold text-center mb-2">Have a Referral Code?</h2>
-              <p className="text-gray-400 text-center mb-8">Enter it below to claim your $50 reward</p>
+              <p className="text-gray-400 text-center mb-8">Enter it below to claim your $50 off</p>
 
               <form onSubmit={handleUseFriendCode} className="space-y-4">
                 <div>
@@ -432,7 +432,7 @@ const Referral = () => {
                       disabled={isSubmitting}
                       className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 py-4 rounded-xl font-bold text-lg transition"
                     >
-                      {isSubmitting ? 'Processing...' : 'Claim My $50 Reward'}
+                      {isSubmitting ? 'Processing...' : 'Claim My $50 Off'}
                     </button>
                   </>
                 )}
@@ -443,11 +443,11 @@ const Referral = () => {
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-center gap-2">
                     <span className="text-green-400">💵</span>
-                    <span className="font-bold text-green-400">$50</span> instant reward
+                    <span className="font-bold text-green-400">$50 off</span> your order
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-yellow-400">⭐</span>
-                    <span className="font-bold text-yellow-400">Your referrer</span> also gets $50
+                    <span className="font-bold text-yellow-400">Your referrer</span> earns a cash reward
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-blue-400">🎁</span>
@@ -465,15 +465,15 @@ const Referral = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-6">Calculate Your Earnings</h2>
           <div className="grid grid-cols-4 gap-4 mb-6">
-            {[1, 3, 5, 10].map(num => (
-              <div key={num} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
-                <p className="text-sm text-gray-400 mb-1">{num} Referral{num > 1 ? 's' : ''}</p>
-                <p className="text-2xl font-bold text-green-400">${num * 50}</p>
+            {[{n: 1, earn: 50}, {n: 3, earn: 250}, {n: 5, earn: 450}, {n: 10, earn: 950}].map(({n, earn}) => (
+              <div key={n} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                <p className="text-sm text-gray-400 mb-1">{n} Referral{n > 1 ? 's' : ''}</p>
+                <p className="text-2xl font-bold text-green-400">${earn}</p>
               </div>
             ))}
           </div>
           <p className="text-gray-400">
-            Refer <span className="text-white font-bold">10 friends</span> = <span className="text-green-400 font-bold">$500</span> for you + <span className="text-green-400 font-bold">$500</span> for them!
+            Refer <span className="text-white font-bold">10 friends</span> = <span className="text-green-400 font-bold">$950</span> for you + they each get <span className="text-green-400 font-bold">$50 off</span>!
           </p>
         </div>
       </section>

@@ -20,7 +20,28 @@ const Tools = () => {
   const [gpaResult, setGpaResult] = useState(null);
   const [pomodoroTime, setPomodoroTime] = useState(25 * 60);
   const [pomodoroRunning, setPomodoroRunning] = useState(false);
-  const [resumeData, setResumeData] = useState({ name: '', email: '', phone: '', summary: '', experience: '', education: '', skills: '' });
+  // Enhanced Resume Builder State
+  const [resumeData, setResumeData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    linkedin: '',
+    education: [{ degree: '', school: '', location: '', date: '', gpa: '' }],
+    skills: {
+      programmingLanguages: '',
+      cloudPlatforms: '',
+      webTechnologies: '',
+      databases: '',
+      devopsTools: '',
+      dataAnalytics: '',
+      machineLearning: '',
+      llmGenAI: ''
+    },
+    experience: [{ title: '', company: '', location: '', date: '', bullets: [''] }],
+    projects: [{ name: '', description: '', bullets: [''] }]
+  });
+  const [jobDescription, setJobDescription] = useState('');
+  const [jdMatchResult, setJdMatchResult] = useState(null);
   const [pdfFiles, setPdfFiles] = useState([]);
   const [mergedPdfUrl, setMergedPdfUrl] = useState(null);
   const [pdfMerging, setPdfMerging] = useState(false);
@@ -48,12 +69,12 @@ const Tools = () => {
   const [calcMemory, setCalcMemory] = useState(0);
 
   const tools = [
+    { id: 'resume', name: 'Resume Builder Pro', icon: '📄', category: 'Documents', desc: 'MAANG-approved format with JD matching', featured: true },
     { id: 'wordcount', name: 'Word Counter Pro', icon: '📝', category: 'Writing', desc: 'Count words, characters, sentences, paragraphs & reading time' },
     { id: 'citation', name: 'Citation Generator', icon: '📚', category: 'Writing', desc: 'Generate APA, MLA, Chicago, Harvard citations instantly' },
     { id: 'plagiarism', name: 'Plagiarism Checker', icon: '🔍', category: 'Writing', desc: 'Compare texts for similarity percentage' },
     { id: 'paraphrase', name: 'Paraphrasing Tool', icon: '🔄', category: 'Writing', desc: 'Rewrite sentences with synonyms' },
     { id: 'pptgen', name: 'PPT Generator', icon: '📊', category: 'Documents', desc: 'Create PowerPoint from outline' },
-    { id: 'resume', name: 'Resume Builder', icon: '📄', category: 'Documents', desc: 'Build professional resume instantly' },
     { id: 'pdftools', name: 'PDF Tools', icon: '📑', category: 'Documents', desc: 'Merge, split, compress PDFs' },
     { id: 'gpa', name: 'GPA Calculator', icon: '🎓', category: 'Study', desc: 'Calculate GPA/CGPA easily' },
     { id: 'pomodoro', name: 'Pomodoro Timer', icon: '⏱️', category: 'Study', desc: '25/5 study technique timer' },
@@ -234,37 +255,132 @@ const Tools = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Generate Resume HTML
+  // JD Matching Algorithm - Extract keywords and calculate match score
+  const analyzeJobDescription = () => {
+    if (!jobDescription.trim()) {
+      setJdMatchResult(null);
+      return;
+    }
+
+    // Common tech keywords to extract
+    const techKeywords = [
+      'python', 'java', 'javascript', 'typescript', 'c++', 'c#', 'go', 'rust', 'ruby', 'sql', 'bash',
+      'react', 'angular', 'vue', 'node', 'express', 'django', 'flask', 'spring', 'fastapi',
+      'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'jenkins', 'github', 'gitlab',
+      'postgresql', 'mysql', 'mongodb', 'redis', 'elasticsearch', 'dynamodb', 'cassandra',
+      'machine learning', 'deep learning', 'tensorflow', 'pytorch', 'scikit-learn', 'pandas', 'numpy',
+      'langchain', 'llm', 'gpt', 'bert', 'transformers', 'rag', 'vector database', 'embeddings',
+      'kafka', 'rabbitmq', 'graphql', 'rest', 'grpc', 'microservices', 'agile', 'scrum',
+      'data engineering', 'etl', 'data pipeline', 'spark', 'hadoop', 'airflow', 'databricks'
+    ];
+
+    const jdLower = jobDescription.toLowerCase();
+    const foundKeywords = techKeywords.filter(kw => jdLower.includes(kw));
+
+    // Check which keywords are in user's resume
+    const allSkills = Object.values(resumeData.skills).join(' ').toLowerCase();
+    const allExperience = resumeData.experience.map(e => e.bullets.join(' ')).join(' ').toLowerCase();
+    const allProjects = resumeData.projects.map(p => p.bullets.join(' ')).join(' ').toLowerCase();
+    const resumeText = `${allSkills} ${allExperience} ${allProjects}`;
+
+    const matchedKeywords = foundKeywords.filter(kw => resumeText.includes(kw));
+    const missingKeywords = foundKeywords.filter(kw => !resumeText.includes(kw));
+
+    const matchScore = foundKeywords.length > 0 ? Math.round((matchedKeywords.length / foundKeywords.length) * 100) : 0;
+
+    setJdMatchResult({
+      score: matchScore,
+      matched: matchedKeywords,
+      missing: missingKeywords,
+      total: foundKeywords.length
+    });
+  };
+
+  // Generate MAANG-Style Resume HTML
   const generateResumeHTML = () => {
-    const { name, email, phone, summary, experience, education, skills } = resumeData;
-    return `
-<!DOCTYPE html>
+    const { name, phone, email, linkedin, education, skills, experience, projects } = resumeData;
+
+    const formatBullets = (bullets) => bullets.filter(b => b.trim()).map(b => `<li>${b}</li>`).join('\n');
+
+    const skillRows = [
+      { label: 'Programming Languages', value: skills.programmingLanguages },
+      { label: 'Cloud Platforms', value: skills.cloudPlatforms },
+      { label: 'Web Technologies', value: skills.webTechnologies },
+      { label: 'Databases', value: skills.databases },
+      { label: 'CI/CD & DevOps Tools', value: skills.devopsTools },
+      { label: 'Data & Analytics', value: skills.dataAnalytics },
+      { label: 'Machine Learning/AI', value: skills.machineLearning },
+      { label: 'LLM & GenAI', value: skills.llmGenAI },
+    ].filter(row => row.value.trim());
+
+    return `<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <style>
-    body { font-family: 'Arial', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-    h1 { color: #1a1a1a; border-bottom: 2px solid #f97316; padding-bottom: 10px; margin-bottom: 5px; }
-    .contact { color: #666; margin-bottom: 20px; }
-    h2 { color: #f97316; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-    .section { margin-bottom: 15px; }
-    ul { margin: 10px 0; padding-left: 20px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Times New Roman', serif; font-size: 10pt; line-height: 1.3; max-width: 8.5in; margin: 0 auto; padding: 0.5in; color: #000; }
+    h1 { font-size: 18pt; text-align: center; margin-bottom: 4px; font-weight: bold; }
+    .contact { text-align: center; font-size: 9pt; margin-bottom: 12px; }
+    .contact a { color: #000; text-decoration: none; }
+    .section-header { font-size: 11pt; font-weight: bold; color: #1a4b8c; border-bottom: 1px solid #1a4b8c; margin-top: 10px; margin-bottom: 6px; padding-bottom: 2px; }
+    .education-item { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .education-item .left { font-weight: bold; }
+    .education-item .right { text-align: right; }
+    .skills-table { width: 100%; font-size: 9pt; }
+    .skills-table td { vertical-align: top; padding: 1px 0; }
+    .skills-table .label { font-weight: bold; width: 160px; }
+    .exp-header { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .exp-header .title { font-weight: bold; }
+    .exp-header .date { text-align: right; }
+    .exp-company { display: flex; justify-content: space-between; font-style: italic; margin-bottom: 4px; }
+    ul { margin-left: 15px; margin-bottom: 8px; }
+    li { margin-bottom: 2px; text-align: justify; }
+    .project-header { font-weight: bold; margin-bottom: 2px; }
+    .project-desc { font-style: italic; font-size: 9pt; margin-bottom: 4px; }
+    @media print { body { padding: 0.25in; } }
   </style>
 </head>
 <body>
   <h1>${name || 'Your Name'}</h1>
-  <div class="contact">${email || 'email@example.com'} | ${phone || '(123) 456-7890'}</div>
+  <div class="contact">
+    📞 ${phone || '+1 (XXX) XXX-XXXX'} &nbsp;|&nbsp;
+    ✉️ <a href="mailto:${email}">${email || 'email@example.com'}</a> &nbsp;|&nbsp;
+    🔗 <a href="${linkedin}">${linkedin ? 'LinkedIn' : 'linkedin.com/in/yourprofile'}</a>
+  </div>
 
-  <h2>Professional Summary</h2>
-  <div class="section">${summary || 'Enter your professional summary...'}</div>
+  <div class="section-header">📚 EDUCATION</div>
+  ${education.filter(e => e.degree || e.school).map(edu => `
+  <div class="education-item">
+    <div class="left">${edu.degree}${edu.school ? `, ${edu.school}` : ''}${edu.location ? `, ${edu.location}` : ''}</div>
+    <div class="right">${edu.date}${edu.gpa ? ` | GPA: ${edu.gpa}` : ''}</div>
+  </div>`).join('')}
 
-  <h2>Experience</h2>
-  <div class="section">${experience?.replace(/\n/g, '<br>') || 'Enter your work experience...'}</div>
+  <div class="section-header">🛠️ TECHNICAL SKILLS</div>
+  <table class="skills-table">
+    ${skillRows.map(row => `
+    <tr>
+      <td class="label">${row.label}</td>
+      <td>${row.value}</td>
+    </tr>`).join('')}
+  </table>
 
-  <h2>Education</h2>
-  <div class="section">${education?.replace(/\n/g, '<br>') || 'Enter your education...'}</div>
+  <div class="section-header">💼 PROFESSIONAL EXPERIENCE</div>
+  ${experience.filter(e => e.title || e.company).map(exp => `
+  <div class="exp-header">
+    <span class="title">${exp.title}</span>
+    <span class="date">${exp.date}</span>
+  </div>
+  <div class="exp-company">
+    <span>${exp.company}${exp.location ? `, ${exp.location}` : ''}</span>
+  </div>
+  <ul>${formatBullets(exp.bullets)}</ul>`).join('')}
 
-  <h2>Skills</h2>
-  <div class="section">${skills || 'Enter your skills...'}</div>
+  <div class="section-header">🚀 ACADEMIC PROJECTS</div>
+  ${projects.filter(p => p.name).map(proj => `
+  <div class="project-header">${proj.name}</div>
+  ${proj.description ? `<div class="project-desc">${proj.description}</div>` : ''}
+  <ul>${formatBullets(proj.bullets)}</ul>`).join('')}
 </body>
 </html>`;
   };
@@ -275,9 +391,35 @@ const Tools = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${resumeData.name || 'resume'}_resume.html`;
+    a.download = `${resumeData.name || 'resume'}_MAANG_resume.html`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Helper functions for dynamic resume sections
+  const addEducation = () => setResumeData({...resumeData, education: [...resumeData.education, { degree: '', school: '', location: '', date: '', gpa: '' }]});
+  const removeEducation = (index) => setResumeData({...resumeData, education: resumeData.education.filter((_, i) => i !== index)});
+
+  const addExperience = () => setResumeData({...resumeData, experience: [...resumeData.experience, { title: '', company: '', location: '', date: '', bullets: [''] }]});
+  const removeExperience = (index) => setResumeData({...resumeData, experience: resumeData.experience.filter((_, i) => i !== index)});
+
+  const addProject = () => setResumeData({...resumeData, projects: [...resumeData.projects, { name: '', description: '', bullets: [''] }]});
+  const removeProject = (index) => setResumeData({...resumeData, projects: resumeData.projects.filter((_, i) => i !== index)});
+
+  const addBullet = (section, index) => {
+    const newData = {...resumeData};
+    newData[section][index].bullets.push('');
+    setResumeData(newData);
+  };
+  const removeBullet = (section, itemIndex, bulletIndex) => {
+    const newData = {...resumeData};
+    newData[section][itemIndex].bullets = newData[section][itemIndex].bullets.filter((_, i) => i !== bulletIndex);
+    setResumeData(newData);
+  };
+  const updateBullet = (section, itemIndex, bulletIndex, value) => {
+    const newData = {...resumeData};
+    newData[section][itemIndex].bullets[bulletIndex] = value;
+    setResumeData(newData);
   };
 
   // PPT Generator (Creates downloadable HTML presentation)
@@ -804,58 +946,171 @@ ${slides.map((slide, i) => `
 
       case 'resume':
         return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-                placeholder="Full Name"
-                value={resumeData.name}
-                onChange={(e) => setResumeData({...resumeData, name: e.target.value})}
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+            {/* JD Matching Section */}
+            <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 p-4 rounded-xl border border-blue-500/30">
+              <h3 className="font-bold text-blue-400 mb-2">🎯 Job Description Matching (Optional)</h3>
+              <textarea
+                className="w-full h-24 bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500"
+                placeholder="Paste the job description here to see how well your resume matches and get suggestions..."
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
               />
-              <input
-                className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-                placeholder="Email"
-                value={resumeData.email}
-                onChange={(e) => setResumeData({...resumeData, email: e.target.value})}
-              />
+              <button onClick={analyzeJobDescription} className="mt-2 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition">
+                Analyze Match
+              </button>
+              {jdMatchResult && (
+                <div className="mt-3 p-3 bg-gray-800 rounded-lg">
+                  <div className="flex items-center gap-4 mb-2">
+                    <span className={`text-2xl font-bold ${jdMatchResult.score >= 70 ? 'text-green-400' : jdMatchResult.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                      {jdMatchResult.score}%
+                    </span>
+                    <span className="text-gray-400 text-sm">Match Score ({jdMatchResult.matched.length}/{jdMatchResult.total} keywords)</span>
+                  </div>
+                  {jdMatchResult.missing.length > 0 && (
+                    <div className="text-sm">
+                      <span className="text-gray-400">Missing keywords: </span>
+                      <span className="text-red-400">{jdMatchResult.missing.slice(0, 8).join(', ')}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <input
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-              placeholder="Phone Number"
-              value={resumeData.phone}
-              onChange={(e) => setResumeData({...resumeData, phone: e.target.value})}
-            />
-            <textarea
-              className="w-full h-24 bg-gray-700 border border-gray-600 rounded-xl p-4 focus:outline-none focus:border-orange-500"
-              placeholder="Professional Summary (2-3 sentences about yourself)"
-              value={resumeData.summary}
-              onChange={(e) => setResumeData({...resumeData, summary: e.target.value})}
-            />
-            <textarea
-              className="w-full h-32 bg-gray-700 border border-gray-600 rounded-xl p-4 focus:outline-none focus:border-orange-500"
-              placeholder="Work Experience (Job Title, Company, Dates, Responsibilities)"
-              value={resumeData.experience}
-              onChange={(e) => setResumeData({...resumeData, experience: e.target.value})}
-            />
-            <textarea
-              className="w-full h-24 bg-gray-700 border border-gray-600 rounded-xl p-4 focus:outline-none focus:border-orange-500"
-              placeholder="Education (Degree, University, Year)"
-              value={resumeData.education}
-              onChange={(e) => setResumeData({...resumeData, education: e.target.value})}
-            />
-            <input
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500"
-              placeholder="Skills (comma separated)"
-              value={resumeData.skills}
-              onChange={(e) => setResumeData({...resumeData, skills: e.target.value})}
-            />
-            <button
-              onClick={downloadResume}
-              className="w-full bg-orange-500 hover:bg-orange-600 py-3 rounded-xl font-bold transition"
-            >
-              Download Resume (HTML)
-            </button>
-            <p className="text-gray-500 text-sm">Open the downloaded file in browser, then use Ctrl+P to save as PDF.</p>
+
+            {/* Basic Info */}
+            <div>
+              <h3 className="font-bold text-orange-400 mb-3">👤 Basic Information</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <input className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="Full Name" value={resumeData.name} onChange={(e) => setResumeData({...resumeData, name: e.target.value})} />
+                <input className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="Phone (+1 XXX XXX-XXXX)" value={resumeData.phone} onChange={(e) => setResumeData({...resumeData, phone: e.target.value})} />
+                <input className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="Email" value={resumeData.email} onChange={(e) => setResumeData({...resumeData, email: e.target.value})} />
+                <input className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="LinkedIn URL" value={resumeData.linkedin} onChange={(e) => setResumeData({...resumeData, linkedin: e.target.value})} />
+              </div>
+            </div>
+
+            {/* Education */}
+            <div>
+              <h3 className="font-bold text-orange-400 mb-3">📚 Education</h3>
+              {resumeData.education.map((edu, i) => (
+                <div key={i} className="bg-gray-700/50 p-3 rounded-lg mb-2 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-400">Education #{i + 1}</span>
+                    {resumeData.education.length > 1 && <button onClick={() => removeEducation(i)} className="text-red-400 text-xs hover:text-red-300">Remove</button>}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Degree (e.g., Master's in CS)" value={edu.degree} onChange={(e) => { const newEdu = [...resumeData.education]; newEdu[i].degree = e.target.value; setResumeData({...resumeData, education: newEdu}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="University" value={edu.school} onChange={(e) => { const newEdu = [...resumeData.education]; newEdu[i].school = e.target.value; setResumeData({...resumeData, education: newEdu}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Location (City, State)" value={edu.location} onChange={(e) => { const newEdu = [...resumeData.education]; newEdu[i].location = e.target.value; setResumeData({...resumeData, education: newEdu}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Date (e.g., Dec 2021)" value={edu.date} onChange={(e) => { const newEdu = [...resumeData.education]; newEdu[i].date = e.target.value; setResumeData({...resumeData, education: newEdu}); }} />
+                  </div>
+                </div>
+              ))}
+              <button onClick={addEducation} className="text-sm text-orange-400 hover:text-orange-300">+ Add Education</button>
+            </div>
+
+            {/* Technical Skills */}
+            <div>
+              <h3 className="font-bold text-orange-400 mb-3">🛠️ Technical Skills</h3>
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Programming Languages</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Python, Java, JavaScript, SQL..." value={resumeData.skills.programmingLanguages} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, programmingLanguages: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Cloud Platforms</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="AWS, Azure, GCP, Lambda..." value={resumeData.skills.cloudPlatforms} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, cloudPlatforms: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Web Technologies</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="React, Node.js, REST APIs..." value={resumeData.skills.webTechnologies} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, webTechnologies: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Databases</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="PostgreSQL, MongoDB, Redis..." value={resumeData.skills.databases} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, databases: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">CI/CD & DevOps</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Docker, Kubernetes, Jenkins..." value={resumeData.skills.devopsTools} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, devopsTools: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Data & Analytics</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Pandas, NumPy, Spark..." value={resumeData.skills.dataAnalytics} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, dataAnalytics: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">Machine Learning/AI</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="TensorFlow, PyTorch, scikit-learn..." value={resumeData.skills.machineLearning} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, machineLearning: e.target.value}})} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 items-center">
+                  <span className="text-xs text-gray-400">LLM & GenAI</span>
+                  <input className="col-span-2 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="LangChain, RAG, Embeddings..." value={resumeData.skills.llmGenAI} onChange={(e) => setResumeData({...resumeData, skills: {...resumeData.skills, llmGenAI: e.target.value}})} />
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Experience */}
+            <div>
+              <h3 className="font-bold text-orange-400 mb-3">💼 Professional Experience</h3>
+              {resumeData.experience.map((exp, i) => (
+                <div key={i} className="bg-gray-700/50 p-3 rounded-lg mb-3 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-400">Experience #{i + 1}</span>
+                    {resumeData.experience.length > 1 && <button onClick={() => removeExperience(i)} className="text-red-400 text-xs hover:text-red-300">Remove</button>}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Job Title" value={exp.title} onChange={(e) => { const newExp = [...resumeData.experience]; newExp[i].title = e.target.value; setResumeData({...resumeData, experience: newExp}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Company" value={exp.company} onChange={(e) => { const newExp = [...resumeData.experience]; newExp[i].company = e.target.value; setResumeData({...resumeData, experience: newExp}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Location" value={exp.location} onChange={(e) => { const newExp = [...resumeData.experience]; newExp[i].location = e.target.value; setResumeData({...resumeData, experience: newExp}); }} />
+                    <input className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Dates (Jan 2023 - Present)" value={exp.date} onChange={(e) => { const newExp = [...resumeData.experience]; newExp[i].date = e.target.value; setResumeData({...resumeData, experience: newExp}); }} />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-400">Bullet Points (use action verbs + metrics)</span>
+                    {exp.bullets.map((bullet, bi) => (
+                      <div key={bi} className="flex gap-1">
+                        <span className="text-gray-500 mt-1">•</span>
+                        <input className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Architected microservices reducing latency by 40%..." value={bullet} onChange={(e) => updateBullet('experience', i, bi, e.target.value)} />
+                        {exp.bullets.length > 1 && <button onClick={() => removeBullet('experience', i, bi)} className="text-red-400 text-xs px-1">×</button>}
+                      </div>
+                    ))}
+                    <button onClick={() => addBullet('experience', i)} className="text-xs text-blue-400 hover:text-blue-300">+ Add bullet</button>
+                  </div>
+                </div>
+              ))}
+              <button onClick={addExperience} className="text-sm text-orange-400 hover:text-orange-300">+ Add Experience</button>
+            </div>
+
+            {/* Projects */}
+            <div>
+              <h3 className="font-bold text-orange-400 mb-3">🚀 Academic Projects</h3>
+              {resumeData.projects.map((proj, i) => (
+                <div key={i} className="bg-gray-700/50 p-3 rounded-lg mb-3 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-400">Project #{i + 1}</span>
+                    {resumeData.projects.length > 1 && <button onClick={() => removeProject(i)} className="text-red-400 text-xs hover:text-red-300">Remove</button>}
+                  </div>
+                  <input className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Project Name" value={proj.name} onChange={(e) => { const newProj = [...resumeData.projects]; newProj[i].name = e.target.value; setResumeData({...resumeData, projects: newProj}); }} />
+                  <input className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Brief description or publication info (optional)" value={proj.description} onChange={(e) => { const newProj = [...resumeData.projects]; newProj[i].description = e.target.value; setResumeData({...resumeData, projects: newProj}); }} />
+                  <div className="space-y-1">
+                    {proj.bullets.map((bullet, bi) => (
+                      <div key={bi} className="flex gap-1">
+                        <span className="text-gray-500 mt-1">•</span>
+                        <input className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:border-orange-500" placeholder="Built CNN model achieving 95% accuracy..." value={bullet} onChange={(e) => updateBullet('projects', i, bi, e.target.value)} />
+                        {proj.bullets.length > 1 && <button onClick={() => removeBullet('projects', i, bi)} className="text-red-400 text-xs px-1">×</button>}
+                      </div>
+                    ))}
+                    <button onClick={() => addBullet('projects', i)} className="text-xs text-blue-400 hover:text-blue-300">+ Add bullet</button>
+                  </div>
+                </div>
+              ))}
+              <button onClick={addProject} className="text-sm text-orange-400 hover:text-orange-300">+ Add Project</button>
+            </div>
+
+            {/* Download Button */}
+            <div className="sticky bottom-0 bg-gray-800 pt-4 pb-2 border-t border-gray-700">
+              <button onClick={downloadResume} className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 py-3 rounded-xl font-bold transition">
+                📄 Download MAANG Resume (HTML)
+              </button>
+              <p className="text-gray-500 text-xs text-center mt-2">Open in browser → Ctrl+P → Save as PDF. This format is ATS-optimized!</p>
+            </div>
           </div>
         );
 
@@ -1276,7 +1531,7 @@ ${slides.map((slide, i) => `
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <span className="text-orange-400 text-sm font-medium">Free Tools</span>
-            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $50</Link>
+            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $50+</Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">100% FREE</span>
@@ -1310,11 +1565,40 @@ ${slides.map((slide, i) => `
         </div>
       </section>
 
+      {/* Featured Resume Builder */}
+      <section className="py-6 px-4 bg-gradient-to-r from-orange-900/20 via-yellow-900/20 to-orange-900/20 border-b border-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <button
+            onClick={() => setActiveTool('resume')}
+            className={`w-full p-6 rounded-2xl border-2 text-left transition-all hover:scale-[1.01] ${activeTool === 'resume' ? 'border-orange-500 bg-orange-500/20' : 'border-orange-500/50 bg-gradient-to-r from-gray-800 to-gray-800/50 hover:border-orange-500'}`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="text-5xl">📄</span>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">🔥 #1 FEATURED</span>
+                    <span className="bg-blue-500/20 text-blue-400 text-xs font-bold px-2 py-0.5 rounded">ATS OPTIMIZED</span>
+                  </div>
+                  <h3 className="text-2xl font-bold">Resume Builder Pro</h3>
+                  <p className="text-gray-400 text-sm">MAANG-approved format with JD keyword matching • Used by engineers at Microsoft, Meta, Waymo</p>
+                </div>
+              </div>
+              <div className="text-right hidden md:block">
+                <div className="text-3xl font-bold text-green-400">FREE</div>
+                <div className="text-gray-500 text-xs line-through">$49 value</div>
+              </div>
+            </div>
+          </button>
+        </div>
+      </section>
+
       {/* Tools Grid */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
+          <h3 className="text-lg font-bold text-gray-400 mb-4">More Free Tools</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
-            {filteredTools.map(tool => (
+            {filteredTools.filter(t => t.id !== 'resume').map(tool => (
               <button
                 key={tool.id}
                 onClick={() => setActiveTool(tool.id)}

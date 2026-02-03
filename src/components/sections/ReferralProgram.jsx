@@ -18,27 +18,27 @@ const ReferralProgram = () => {
         <div className="inline-block bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
           💰 Referral Program — Everyone Wins!
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-4">You Get $50 + Friend Gets $50</h2>
-        <p className="text-xl opacity-90 mb-8">Share your unique code. When they sign up, BOTH of you get paid!</p>
+        <h2 className="text-4xl md:text-5xl font-bold mb-4">Earn $50–$100 Per Referral</h2>
+        <p className="text-xl opacity-90 mb-8">Earn more with every referral. Your friend gets $50 off!</p>
 
         <div className="grid md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20 hover:border-green-500/50 transition-all hover:scale-105">
             <div className="text-4xl mb-3">💵</div>
             <div className="text-3xl font-bold text-green-400 mb-2">$50</div>
-            <div className="font-bold">You Get</div>
-            <p className="text-sm opacity-75 mt-1">Real cash, not credits</p>
+            <div className="font-bold">1st Referral</div>
+            <p className="text-sm opacity-75 mt-1">Start earning right away</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20 hover:border-green-500/50 transition-all hover:scale-105">
-            <div className="text-4xl mb-3">🎁</div>
-            <div className="text-3xl font-bold text-green-400 mb-2">$50</div>
-            <div className="font-bold">Friend Gets</div>
-            <p className="text-sm opacity-75 mt-1">Real cash reward</p>
+            <div className="text-4xl mb-3">🚀</div>
+            <div className="text-3xl font-bold text-green-400 mb-2">$100</div>
+            <div className="font-bold">2nd+ Referral</div>
+            <p className="text-sm opacity-75 mt-1">$100 for every additional</p>
           </div>
           <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur rounded-2xl p-6 border border-green-500/50 hover:scale-105 transition-all">
             <div className="text-4xl mb-3">♾️</div>
             <div className="text-3xl font-bold text-green-400 mb-2">No Limit</div>
             <div className="font-bold">Unlimited Referrals</div>
-            <p className="text-sm opacity-75 mt-1">10 friends = $500 for you!</p>
+            <p className="text-sm opacity-75 mt-1">10 friends = $950 for you!</p>
           </div>
         </div>
 
