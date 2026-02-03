@@ -1273,6 +1273,11 @@ ${slides.map((slide, i) => `
             <span className="text-2xl">⛓️</span>
             <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">AgentChains.ai</span>
           </Link>
+          <div className="hidden md:flex items-center gap-4">
+            <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
+            <span className="text-orange-400 text-sm font-medium">Free Tools</span>
+            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $100</Link>
+          </div>
           <div className="flex items-center gap-4">
             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">100% FREE</span>
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>

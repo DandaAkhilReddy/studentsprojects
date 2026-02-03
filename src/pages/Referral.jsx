@@ -73,9 +73,12 @@ const Referral = () => {
             <span className="text-2xl">⛓️</span>
             <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">AgentChains.ai</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
-            <Link to="/tools" className="text-gray-400 hover:text-white text-sm transition">Free Tools</Link>
+            <Link to="/tools" className="text-orange-400 hover:text-orange-300 text-sm font-medium transition">Free Tools</Link>
+            <span className="text-green-400 text-sm font-medium">💰 Earn $100</span>
+          </div>
+          <div className="flex items-center gap-4">
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
           </div>
         </div>
