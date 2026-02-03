@@ -2,8 +2,8 @@ export const packages = [
   {
     id: 'code',
     name: 'Code Only',
-    price: 199,
-    originalPrice: 299,
+    price: 299,
+    originalPrice: 598,
     icon: '💻',
     features: [
       'Running application (3000+ lines)',
@@ -17,8 +17,8 @@ export const packages = [
   {
     id: 'docs',
     name: 'Docs Only',
-    price: 299,
-    originalPrice: 399,
+    price: 349,
+    originalPrice: 698,
     icon: '📄',
     features: [
       'Team Project Proposal',
@@ -35,7 +35,7 @@ export const packages = [
     id: 'complete',
     name: 'Complete Package',
     price: 399,
-    originalPrice: 599,
+    originalPrice: 798,
     icon: '🚀',
     popular: true,
     features: [

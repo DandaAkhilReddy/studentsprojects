@@ -56,7 +56,7 @@ const ContactForm = ({ onClose }) => {
                 className={`p-4 rounded-xl border-2 text-center transition-all ${formData.serviceType === 'project' ? 'border-orange-500 bg-orange-500/20' : 'border-gray-600 hover:border-gray-500'}`}>
                 <span className="text-2xl block mb-1">🚀</span>
                 <span className="font-bold">Project</span>
-                <span className="text-xs text-gray-400 block">From $199</span>
+                <span className="text-xs text-gray-400 block">From $299</span>
               </button>
               <button type="button" onClick={() => setFormData({...formData, serviceType: 'assignment'})}
                 className={`p-4 rounded-xl border-2 text-center transition-all ${formData.serviceType === 'assignment' ? 'border-green-500 bg-green-500/20' : 'border-gray-600 hover:border-gray-500'}`}>
@@ -75,12 +75,12 @@ const ContactForm = ({ onClose }) => {
                 <button type="button" onClick={() => setFormData({...formData, projectPackage: 'code'})}
                   className={`p-3 rounded-lg border text-center text-sm transition-all ${formData.projectPackage === 'code' ? 'border-blue-500 bg-blue-500/20' : 'border-gray-600 hover:border-gray-500'}`}>
                   <span className="font-bold block">Code Only</span>
-                  <span className="text-gray-400 text-xs">$199</span>
+                  <span className="text-gray-400 text-xs">$299</span>
                 </button>
                 <button type="button" onClick={() => setFormData({...formData, projectPackage: 'docs'})}
                   className={`p-3 rounded-lg border text-center text-sm transition-all ${formData.projectPackage === 'docs' ? 'border-blue-500 bg-blue-500/20' : 'border-gray-600 hover:border-gray-500'}`}>
                   <span className="font-bold block">Docs Only</span>
-                  <span className="text-gray-400 text-xs">$299</span>
+                  <span className="text-gray-400 text-xs">$349</span>
                 </button>
                 <button type="button" onClick={() => setFormData({...formData, projectPackage: 'complete'})}
                   className={`p-3 rounded-lg border text-center text-sm transition-all ${formData.projectPackage === 'complete' ? 'border-orange-500 bg-orange-500/20' : 'border-gray-600 hover:border-gray-500'}`}>

@@ -4,6 +4,9 @@ const Pricing = ({ onGetStarted }) => {
   return (
     <section id="pricing" className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-4">
+          <span className="inline-block bg-red-500/20 text-red-400 px-4 py-1.5 rounded-full text-sm font-bold animate-pulse">🔥 50% OFF — Limited Time!</span>
+        </div>
         <h2 className="text-3xl font-bold text-center mb-3">Simple, Transparent Pricing</h2>
         <p className="text-gray-400 text-center mb-12">No hidden fees. No surprises. Just results.</p>
 

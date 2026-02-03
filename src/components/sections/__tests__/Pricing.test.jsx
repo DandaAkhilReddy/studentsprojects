@@ -40,8 +40,8 @@ describe('Pricing Component', () => {
     it('displays package prices correctly', () => {
       render(<Pricing onGetStarted={mockOnGetStarted} />)
       // Use getAllByText since some prices appear multiple times (as original and discounted)
-      expect(screen.getAllByText('$199').length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText('$299').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('$349').length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText('$399').length).toBeGreaterThanOrEqual(1)
     })
 
@@ -52,9 +52,9 @@ describe('Pricing Component', () => {
       expect(strikethroughElements.length).toBeGreaterThanOrEqual(3)
     })
 
-    it('displays assignment price as $49', () => {
+    it('displays assignment price range', () => {
       render(<Pricing onGetStarted={mockOnGetStarted} />)
-      expect(screen.getByText('$49')).toBeInTheDocument()
+      expect(screen.getByText('$25–$50')).toBeInTheDocument()
     })
   })
 
@@ -70,9 +70,9 @@ describe('Pricing Component', () => {
       expect(screen.getByText(/Any subject, any topic/)).toBeInTheDocument()
     })
 
-    it('displays per assignment text', () => {
+    it('displays subject-wise pricing text', () => {
       render(<Pricing onGetStarted={mockOnGetStarted} />)
-      expect(screen.getByText('per assignment')).toBeInTheDocument()
+      expect(screen.getByText('subject-wise pricing')).toBeInTheDocument()
     })
 
     it('renders Order Now button for assignments', () => {

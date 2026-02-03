@@ -34,7 +34,7 @@ const Hero = ({ onGetStarted }) => {
           <button onClick={onGetStarted} className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-orange-500/30 transition-all transform hover:scale-105">Get Complete Package — $399</button>
           <button onClick={onGetStarted} className="bg-gray-800 hover:bg-gray-700 border border-gray-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all">Order Assignment — From $25</button>
         </div>
-        <p className="text-gray-500 mt-4 text-sm">💰 Save $200 on Complete Package (was $599)</p>
+        <p className="text-gray-500 mt-4 text-sm">💰 Save $399 — 50% OFF Complete Package (was $798)</p>
       </div>
     </section>
   );
