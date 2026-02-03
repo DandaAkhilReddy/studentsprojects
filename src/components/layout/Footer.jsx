@@ -4,7 +4,7 @@ const Footer = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">⛓️</span>
+            <img src="/logo-nav.svg" alt="AgentChains" className="w-8 h-8" />
             <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">AgentChains.ai</span>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-4 text-sm">

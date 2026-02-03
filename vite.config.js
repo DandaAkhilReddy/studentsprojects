@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'icon-192.png', 'icon-512.png'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'logo-nav.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'AgentChains.ai - Student Project Help',
         short_name: 'AgentChains',

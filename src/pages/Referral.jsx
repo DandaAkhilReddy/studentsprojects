@@ -157,7 +157,7 @@ const Referral = () => {
       <nav className="bg-gray-900/95 backdrop-blur-md border-b border-gray-800 px-4 py-4 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl">⛓️</span>
+            <img src="/logo-nav.svg" alt="AgentChains" className="w-8 h-8" />
             <span className="text-xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">AgentChains.ai</span>
           </Link>
           <div className="hidden md:flex items-center gap-4">
@@ -520,7 +520,7 @@ const Referral = () => {
       <footer className="py-8 px-4 border-t border-gray-800 text-center text-gray-500">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-xl">⛓️</span>
+            <img src="/logo-nav.svg" alt="AgentChains" className="w-6 h-6" />
             <span className="font-bold text-white">AgentChains.ai</span>
           </div>
           <p className="text-sm">© 2024 AgentChains.ai — Professional Academic Project Assistance</p>
