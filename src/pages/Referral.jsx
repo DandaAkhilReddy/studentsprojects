@@ -130,11 +130,11 @@ const Referral = () => {
   const faqs = [
     {
       q: "How does the referral program work?",
-      a: "Register to get your unique code. Share it with friends. When they sign up using your code, you earn $50 (first) or $100 (subsequent). Your friend gets $50 off their order!"
+      a: "Register to get your unique code. Share it with friends. For project referrals, you earn $50 (first) or $100 (subsequent) — friend gets $50 off. For assignment referrals, you earn $5 (first) or $10 (subsequent) — friend gets $5 off!"
     },
     {
       q: "Do I need to be a customer to earn referral money?",
-      a: "No! Anyone can register and earn $50–$100 per referral. You don't need to use our services to participate."
+      a: "No! Anyone can register and start earning. Projects: $50–$100 per referral. Assignments: $5–$10 per referral."
     },
     {
       q: "When do we get paid?",
@@ -142,7 +142,7 @@ const Referral = () => {
     },
     {
       q: "Is there a limit to how many people I can refer?",
-      a: "No limit! Each referral earns you $50 (first) or $100 (additional). Your friends each get $50 off their order."
+      a: "No limit! Earn on both projects and assignments. The more you refer, the more you earn ($100/$10 for each additional referral)."
     },
     {
       q: "What about weekly projects?",
@@ -178,10 +178,10 @@ const Referral = () => {
             💰 Referral Program — Everyone Wins!
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Earn <span className="text-green-400">$50–$100</span> Per Referral
+            Earn on Every Referral
           </h1>
           <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-            <span className="text-green-400 font-bold">$50 for your first, $100 for each after.</span> Your friend gets $50 off!
+            <span className="text-green-400 font-bold">Projects: $50–$100</span> | <span className="text-blue-400 font-bold">Assignments: $5–$10</span> per referral
           </p>
           <p className="text-lg text-gray-400 mb-6">
             No limit on referrals — <span className="text-yellow-400 font-bold">refer more, earn more!</span>
@@ -226,7 +226,7 @@ const Referral = () => {
             <div className="text-center">
               <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">$</div>
               <h3 className="font-bold mb-1">Both Win!</h3>
-              <p className="text-sm text-gray-400">You earn cash, friend gets $50 off</p>
+              <p className="text-sm text-gray-400">You earn cash, friend gets a discount</p>
             </div>
           </div>
         </div>
@@ -309,11 +309,11 @@ const Referral = () => {
                     <ul className="space-y-2 text-sm text-gray-300">
                       <li className="flex items-center gap-2">
                         <span className="text-green-400">✓</span>
-                        You earn <span className="font-bold text-green-400">$50</span> (1st) or <span className="font-bold text-green-400">$100</span> (2nd+)
+                        <span className="font-bold text-green-400">Projects:</span> You earn $50 (1st) or $100 (2nd+), friend gets $50 off
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="text-green-400">✓</span>
-                        Your friend gets <span className="font-bold text-green-400">$50 off</span> their order
+                        <span className="text-blue-400">✓</span>
+                        <span className="font-bold text-blue-400">Assignments:</span> You earn $5 (1st) or $10 (2nd+), friend gets $5 off
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-yellow-400">★</span>
@@ -325,7 +325,7 @@ const Referral = () => {
                   <div className="flex gap-4">
                     <button
                       onClick={() => {
-                        const text = `Use my referral code ${generatedCode} at AgentChains.ai — you get $50 off and I earn rewards! Sign up here: ${window.location.href}`;
+                        const text = `Use my referral code ${generatedCode} at AgentChains.ai — get $50 off projects or $5 off assignments! Sign up here: ${window.location.href}`;
                         navigator.clipboard.writeText(text);
                         toast.success('Share message copied!');
                       }}
@@ -353,7 +353,7 @@ const Referral = () => {
           {activeTab === 'use' && (
             <div>
               <h2 className="text-2xl font-bold text-center mb-2">Have a Referral Code?</h2>
-              <p className="text-gray-400 text-center mb-8">Enter it below to claim your $50 off</p>
+              <p className="text-gray-400 text-center mb-8">Enter it below to claim your discount</p>
 
               <form onSubmit={handleUseFriendCode} className="space-y-4">
                 <div>
@@ -432,7 +432,7 @@ const Referral = () => {
                       disabled={isSubmitting}
                       className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 py-4 rounded-xl font-bold text-lg transition"
                     >
-                      {isSubmitting ? 'Processing...' : 'Claim My $50 Off'}
+                      {isSubmitting ? 'Processing...' : 'Claim My Discount'}
                     </button>
                   </>
                 )}
@@ -443,7 +443,7 @@ const Referral = () => {
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-center gap-2">
                     <span className="text-green-400">💵</span>
-                    <span className="font-bold text-green-400">$50 off</span> your order
+                    <span className="font-bold text-green-400">$50 off</span> projects or <span className="font-bold text-blue-400">$5 off</span> assignments
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-yellow-400">⭐</span>
@@ -464,7 +464,8 @@ const Referral = () => {
       <section className="py-12 px-4 bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-6">Calculate Your Earnings</h2>
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <p className="text-sm font-bold text-green-400 uppercase tracking-wider mb-3">Project Referrals</p>
+          <div className="grid grid-cols-4 gap-4 mb-4">
             {[{n: 1, earn: 50}, {n: 3, earn: 250}, {n: 5, earn: 450}, {n: 10, earn: 950}].map(({n, earn}) => (
               <div key={n} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <p className="text-sm text-gray-400 mb-1">{n} Referral{n > 1 ? 's' : ''}</p>
@@ -472,8 +473,17 @@ const Referral = () => {
               </div>
             ))}
           </div>
+          <p className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-3 mt-6">Assignment Referrals</p>
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            {[{n: 1, earn: 5}, {n: 3, earn: 25}, {n: 5, earn: 45}, {n: 10, earn: 95}].map(({n, earn}) => (
+              <div key={n} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                <p className="text-sm text-gray-400 mb-1">{n} Referral{n > 1 ? 's' : ''}</p>
+                <p className="text-2xl font-bold text-blue-400">${earn}</p>
+              </div>
+            ))}
+          </div>
           <p className="text-gray-400">
-            Refer <span className="text-white font-bold">10 friends</span> = <span className="text-green-400 font-bold">$950</span> for you + they each get <span className="text-green-400 font-bold">$50 off</span>!
+            Refer <span className="text-white font-bold">10 friends</span> for projects = <span className="text-green-400 font-bold">$950</span> | for assignments = <span className="text-blue-400 font-bold">$95</span>
           </p>
         </div>
       </section>

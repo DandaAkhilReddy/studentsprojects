@@ -58,7 +58,7 @@ Services:
 
 Process: Submit request → Get quote → Pay 50% → Receive project → Pay remaining
 
-Referral: Earn $50 for 1st referral, $100 for each additional. Friend gets $50 off their order. No limit.
+Referral: Projects - $50 for 1st, $100 for each additional (friend gets $50 off). Assignments - $5 for 1st, $10 for each additional (friend gets $5 off). No limit on referrals.
 
 Free tools available at /tools including Resume Builder.
 
