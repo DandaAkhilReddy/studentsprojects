@@ -16,6 +16,9 @@ const Navbar = ({ onGetStarted }) => {
           <Link to="/tools" className="text-orange-400 hover:text-orange-300 text-sm font-medium transition flex items-center gap-1">
             Free Tools
           </Link>
+          <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition flex items-center gap-1">
+            💰 Earn $100
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <a href="mailto:info@agentchains.ai" className="text-gray-400 hover:text-white text-sm hidden lg:flex items-center gap-1">info@agentchains.ai</a>
