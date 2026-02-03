@@ -32,7 +32,7 @@ const FloatingReferralCTA = () => {
             </button>
 
             <Link
-              to="/referral"
+              to="/referral#register"
               className="flex items-center bg-gradient-to-b from-green-500 to-emerald-600 px-2 py-6 rounded-r-xl shadow-lg shadow-green-500/30 hover:px-3 transition-all duration-300 group"
               style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
             >
@@ -57,7 +57,7 @@ const FloatingReferralCTA = () => {
             </button>
 
             <Link
-              to="/referral"
+              to="/referral#register"
               className="flex items-center bg-gradient-to-b from-green-500 to-emerald-600 px-2 py-6 rounded-l-xl shadow-lg shadow-green-500/30 hover:px-3 transition-all duration-300 group"
               style={{ writingMode: 'vertical-lr' }}
             >

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   registerReferrer,
@@ -9,6 +9,17 @@ import {
 } from '../services/referralService';
 
 const Referral = () => {
+  const location = useLocation();
+
+  // Scroll to register section if hash is present
+  useEffect(() => {
+    if (location.hash === '#register') {
+      setTimeout(() => {
+        document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location.hash]);
+
   // Registration form state
   const [formData, setFormData] = useState({
     name: '',
@@ -135,7 +146,7 @@ const Referral = () => {
     },
     {
       q: "What about weekly projects?",
-      a: "Referrals get an additional 20% discount on weekly project subscriptions!"
+      a: "Weekly project subscribers get exclusive deals! Contact us for current offers."
     }
   ];
 
@@ -173,7 +184,7 @@ const Referral = () => {
             Share your unique code with friends. When they sign up, <span className="text-green-400 font-bold">BOTH of you get $50 instantly</span>.
           </p>
           <p className="text-lg text-gray-400 mb-6">
-            Plus: Referrals get <span className="text-yellow-400 font-bold">20% OFF</span> on weekly projects!
+            No limit on referrals — <span className="text-yellow-400 font-bold">refer more, earn more!</span>
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
@@ -222,7 +233,7 @@ const Referral = () => {
       </section>
 
       {/* Main Content - Tab Based */}
-      <section className="py-12 px-4 border-t border-gray-800">
+      <section id="register" className="py-12 px-4 border-t border-gray-800">
         <div className="max-w-xl mx-auto">
           {/* Become a Referrer Tab */}
           {activeTab === 'become' && (
@@ -306,7 +317,7 @@ const Referral = () => {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-yellow-400">★</span>
-                        Friend gets <span className="font-bold text-yellow-400">20% off</span> weekly projects
+                        <span className="font-bold text-yellow-400">No limits</span> — refer unlimited friends
                       </li>
                     </ul>
                   </div>
@@ -314,7 +325,7 @@ const Referral = () => {
                   <div className="flex gap-4">
                     <button
                       onClick={() => {
-                        const text = `Use my referral code ${generatedCode} at AgentChains.ai and we BOTH get $50! Plus you get 20% off weekly projects. Sign up here: ${window.location.href}`;
+                        const text = `Use my referral code ${generatedCode} at AgentChains.ai and we BOTH get $50! Sign up here: ${window.location.href}`;
                         navigator.clipboard.writeText(text);
                         toast.success('Share message copied!');
                       }}
@@ -342,7 +353,7 @@ const Referral = () => {
           {activeTab === 'use' && (
             <div>
               <h2 className="text-2xl font-bold text-center mb-2">Have a Referral Code?</h2>
-              <p className="text-gray-400 text-center mb-8">Enter it below to get your $50 reward + 20% off weekly projects</p>
+              <p className="text-gray-400 text-center mb-8">Enter it below to claim your $50 reward</p>
 
               <form onSubmit={handleUseFriendCode} className="space-y-4">
                 <div>
@@ -436,7 +447,7 @@ const Referral = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-yellow-400">⭐</span>
-                    <span className="font-bold text-yellow-400">20% discount</span> on weekly projects
+                    <span className="font-bold text-yellow-400">Your referrer</span> also gets $50
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-blue-400">🎁</span>
