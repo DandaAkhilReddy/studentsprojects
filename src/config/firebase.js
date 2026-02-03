@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { initializeFirestore, memoryLocalCache } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore/lite';
 
 // Firebase configuration
 // IMPORTANT: Replace these with your actual Firebase project credentials
@@ -16,10 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with memory-only cache to prevent background sync connections
-// (this app only uses one-time reads/writes, not real-time listeners)
-export const db = initializeFirestore(app, {
-  localCache: memoryLocalCache(),
-});
+// Use Firestore Lite SDK (REST-based, no gRPC channels or background connections)
+export const db = getFirestore(app);
 
 export default app;

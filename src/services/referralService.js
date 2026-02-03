@@ -10,7 +10,7 @@ import {
   updateDoc,
   increment,
   serverTimestamp
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 
 // Generate a unique referral code
 // Uses characters that are easy to read (no 0/O, 1/I/L confusion)

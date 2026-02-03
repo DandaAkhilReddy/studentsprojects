@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore/lite';
 
 // Generate a simple session ID for grouping messages
 const getSessionId = () => {
