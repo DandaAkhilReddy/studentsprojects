@@ -14,21 +14,10 @@ const ContactForm = ({ onClose }) => {
     deadline: '',
     message: ''
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { submitForm, isSubmitting } = useFormSubmit(() => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      whatsapp: '',
-      university: '',
-      courseName: '',
-      serviceType: '',
-      projectPackage: '',
-      deadline: '',
-      message: ''
-    });
-    onClose();
+    setShowSuccess(true);
   });
 
   const handleSubmit = async (e) => {
@@ -36,13 +25,71 @@ const ContactForm = ({ onClose }) => {
     await submitForm(formData);
   };
 
+  // Success screen
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl p-8 max-w-md w-full border border-gray-700 shadow-2xl text-center animate-fadeIn">
+          {/* Animated checkmark */}
+          <div className="relative mx-auto mb-6 w-24 h-24">
+            <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping"></div>
+            <div className="relative w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/40">
+              <span className="text-5xl">✓</span>
+            </div>
+          </div>
+
+          {/* Bold success heading */}
+          <h2 className="text-3xl font-extrabold mb-2 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            Request Submitted!
+          </h2>
+
+          <p className="text-xl font-bold text-white mb-1">
+            We'll connect with you shortly!
+          </p>
+
+          <p className="text-gray-400 text-sm mb-6">
+            Our team is reviewing your request right now.
+          </p>
+
+          {/* Highlights */}
+          <div className="bg-gray-700/40 rounded-xl p-4 mb-6 space-y-2">
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <span className="text-green-400 font-bold">✓</span>
+              <span>Dedicated project manager assigned</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <span className="text-green-400 font-bold">✓</span>
+              <span>Free consultation call included</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <span className="text-green-400 font-bold">✓</span>
+              <span>Expect a response very soon</span>
+            </div>
+          </div>
+
+          {/* Contact info */}
+          <p className="text-gray-500 text-xs mb-5">
+            Need urgent help? Email us at <a href="mailto:info@agentchains.ai" className="text-orange-400 hover:text-orange-300 font-medium">info@agentchains.ai</a>
+          </p>
+
+          <button
+            onClick={onClose}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 py-3 rounded-xl font-bold text-lg shadow-lg shadow-green-500/25 transition-all hover:scale-105"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-2xl font-bold">Get Started</h3>
-            <p className="text-gray-400 text-sm">Fill in your details and we'll contact you within 24 hours</p>
+            <p className="text-gray-400 text-sm">Fill in your details and we'll connect with you shortly</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl leading-none">×</button>
         </div>
@@ -141,7 +188,7 @@ const ContactForm = ({ onClose }) => {
           >
             {isSubmitting ? 'Submitting...' : 'Submit Request →'}
           </button>
-          <p className="text-center text-gray-500 text-xs">🔒 Your information is secure. We'll contact you within 24 hours.</p>
+          <p className="text-center text-gray-500 text-xs">🔒 Your information is secure. We'll get back to you shortly.</p>
         </form>
       </div>
     </div>

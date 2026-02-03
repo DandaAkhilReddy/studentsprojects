@@ -64,6 +64,8 @@ Free tools available at /tools including Resume Builder.
 
 For orders, direct users to click "Get Started" button on the website.
 
+Contact: info@agentchains.ai — always provide this email when users ask how to reach us or who to contact.
+
 Be helpful, friendly, and direct. Answer questions about services, pricing, and process.`;
 
 const CORS_HEADERS = {

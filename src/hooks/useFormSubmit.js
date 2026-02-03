@@ -42,7 +42,7 @@ export const useFormSubmit = (onSuccess) => {
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Thank you! We will contact you within 24 hours.', {
+        toast.success('Thank you! We\'ll connect with you shortly.', {
           duration: 5000,
           icon: '🎉'
         });
