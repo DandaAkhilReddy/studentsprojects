@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { PDFDocument } from 'pdf-lib';
 
 const Tools = () => {
   const [activeTool, setActiveTool] = useState(null);
@@ -21,7 +22,30 @@ const Tools = () => {
   const [pomodoroRunning, setPomodoroRunning] = useState(false);
   const [resumeData, setResumeData] = useState({ name: '', email: '', phone: '', summary: '', experience: '', education: '', skills: '' });
   const [pdfFiles, setPdfFiles] = useState([]);
+  const [mergedPdfUrl, setMergedPdfUrl] = useState(null);
+  const [pdfMerging, setPdfMerging] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Flashcard States
+  const [flashcards, setFlashcards] = useState(() => {
+    const saved = localStorage.getItem('flashcards');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [currentCard, setCurrentCard] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [newCard, setNewCard] = useState({ front: '', back: '' });
+  const [flashcardMode, setFlashcardMode] = useState('create');
+
+  // Code Formatter States
+  const [codeInput, setCodeInput] = useState('');
+  const [codeOutput, setCodeOutput] = useState('');
+  const [codeLanguage, setCodeLanguage] = useState('javascript');
+
+  // Calculator States
+  const [calcDisplay, setCalcDisplay] = useState('0');
+  const [calcExpression, setCalcExpression] = useState('');
+  const [calcHistory, setCalcHistory] = useState([]);
+  const [calcMemory, setCalcMemory] = useState(0);
 
   const tools = [
     { id: 'wordcount', name: 'Word Counter Pro', icon: '📝', category: 'Writing', desc: 'Count words, characters, sentences, paragraphs & reading time' },
@@ -292,6 +316,235 @@ ${slides.map((slide, i) => `
     a.download = 'presentation.html';
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // PDF Merge Function
+  const mergePdfs = async () => {
+    if (pdfFiles.length < 2) {
+      alert('Please select at least 2 PDF files to merge');
+      return;
+    }
+
+    setPdfMerging(true);
+    try {
+      const mergedPdf = await PDFDocument.create();
+
+      for (const file of pdfFiles) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      setMergedPdfUrl(url);
+    } catch (error) {
+      console.error('Error merging PDFs:', error);
+      alert('Error merging PDFs. Please make sure all files are valid PDFs.');
+    }
+    setPdfMerging(false);
+  };
+
+  const handlePdfFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setPdfFiles(prev => [...prev, ...files]);
+    setMergedPdfUrl(null);
+  };
+
+  const removePdfFile = (index) => {
+    setPdfFiles(prev => prev.filter((_, i) => i !== index));
+    setMergedPdfUrl(null);
+  };
+
+  // Flashcard Functions
+  useEffect(() => {
+    localStorage.setItem('flashcards', JSON.stringify(flashcards));
+  }, [flashcards]);
+
+  const addFlashcard = () => {
+    if (newCard.front.trim() && newCard.back.trim()) {
+      setFlashcards([...flashcards, { ...newCard, id: Date.now() }]);
+      setNewCard({ front: '', back: '' });
+    }
+  };
+
+  const deleteFlashcard = (id) => {
+    setFlashcards(flashcards.filter(card => card.id !== id));
+    if (currentCard >= flashcards.length - 1) {
+      setCurrentCard(Math.max(0, flashcards.length - 2));
+    }
+  };
+
+  const nextCard = () => {
+    setIsFlipped(false);
+    setCurrentCard((prev) => (prev + 1) % flashcards.length);
+  };
+
+  const prevCard = () => {
+    setIsFlipped(false);
+    setCurrentCard((prev) => (prev - 1 + flashcards.length) % flashcards.length);
+  };
+
+  // Code Formatter Function
+  const formatCode = () => {
+    let formatted = codeInput;
+
+    if (codeLanguage === 'javascript' || codeLanguage === 'java') {
+      // Basic JS/Java formatting
+      formatted = formatted
+        .replace(/\{/g, ' {\n')
+        .replace(/\}/g, '\n}\n')
+        .replace(/;/g, ';\n')
+        .replace(/,\s*/g, ', ')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      // Add indentation
+      let indent = 0;
+      formatted = formatted.split('\n').map(line => {
+        line = line.trim();
+        if (line.includes('}')) indent = Math.max(0, indent - 1);
+        const indented = '  '.repeat(indent) + line;
+        if (line.includes('{')) indent++;
+        return indented;
+      }).join('\n');
+    } else if (codeLanguage === 'python') {
+      // Basic Python formatting
+      formatted = formatted
+        .replace(/:\s*/g, ':\n')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      // Add indentation based on colons
+      let indent = 0;
+      formatted = formatted.split('\n').map(line => {
+        line = line.trim();
+        if (line.startsWith('return') || line.startsWith('break') || line.startsWith('continue') || line.startsWith('pass')) {
+          // Keep current indent
+        } else if (line.startsWith('elif') || line.startsWith('else') || line.startsWith('except') || line.startsWith('finally')) {
+          indent = Math.max(0, indent - 1);
+        }
+        const indented = '    '.repeat(indent) + line;
+        if (line.endsWith(':')) indent++;
+        return indented;
+      }).join('\n');
+    } else if (codeLanguage === 'html') {
+      // Basic HTML formatting
+      formatted = formatted
+        .replace(/></g, '>\n<')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      let indent = 0;
+      formatted = formatted.split('\n').map(line => {
+        line = line.trim();
+        if (line.startsWith('</')) indent = Math.max(0, indent - 1);
+        const indented = '  '.repeat(indent) + line;
+        if (line.startsWith('<') && !line.startsWith('</') && !line.endsWith('/>') && !line.includes('</')) indent++;
+        return indented;
+      }).join('\n');
+    } else if (codeLanguage === 'css') {
+      // Basic CSS formatting
+      formatted = formatted
+        .replace(/\{/g, ' {\n')
+        .replace(/\}/g, '\n}\n')
+        .replace(/;/g, ';\n')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      let indent = 0;
+      formatted = formatted.split('\n').map(line => {
+        line = line.trim();
+        if (line.includes('}')) indent = Math.max(0, indent - 1);
+        const indented = '  '.repeat(indent) + line;
+        if (line.includes('{')) indent++;
+        return indented;
+      }).join('\n');
+    }
+
+    setCodeOutput(formatted);
+  };
+
+  // Calculator Functions
+  const factorial = (n) => {
+    if (n < 0) return NaN;
+    if (n === 0 || n === 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= n; i++) result *= i;
+    return result;
+  };
+
+  const handleCalcInput = (value) => {
+    if (calcDisplay === '0' || calcDisplay === 'Error') {
+      setCalcDisplay(value);
+      setCalcExpression(value);
+    } else {
+      setCalcDisplay(calcDisplay + value);
+      setCalcExpression(calcExpression + value);
+    }
+  };
+
+  const handleCalcOperator = (op) => {
+    setCalcDisplay(calcDisplay + op);
+    setCalcExpression(calcExpression + op);
+  };
+
+  const handleCalcFunction = (func) => {
+    try {
+      const num = parseFloat(calcDisplay);
+      let result;
+      switch (func) {
+        case 'sin': result = Math.sin(num * Math.PI / 180); break;
+        case 'cos': result = Math.cos(num * Math.PI / 180); break;
+        case 'tan': result = Math.tan(num * Math.PI / 180); break;
+        case 'log': result = Math.log10(num); break;
+        case 'ln': result = Math.log(num); break;
+        case 'sqrt': result = Math.sqrt(num); break;
+        case 'square': result = num * num; break;
+        case 'factorial': result = factorial(Math.floor(num)); break;
+        case 'pi': result = Math.PI; break;
+        case 'e': result = Math.E; break;
+        default: result = num;
+      }
+      setCalcDisplay(String(result));
+      setCalcExpression(String(result));
+    } catch {
+      setCalcDisplay('Error');
+    }
+  };
+
+  const calculateResult = () => {
+    try {
+      // Safe evaluation using Function constructor
+      const sanitized = calcExpression
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/\^/g, '**');
+      const result = Function('"use strict"; return (' + sanitized + ')')();
+      const resultStr = String(result);
+      setCalcHistory([...calcHistory, { expr: calcExpression, result: resultStr }]);
+      setCalcDisplay(resultStr);
+      setCalcExpression(resultStr);
+    } catch {
+      setCalcDisplay('Error');
+    }
+  };
+
+  const clearCalc = () => {
+    setCalcDisplay('0');
+    setCalcExpression('');
+  };
+
+  const handleMemory = (action) => {
+    const num = parseFloat(calcDisplay) || 0;
+    switch (action) {
+      case 'MC': setCalcMemory(0); break;
+      case 'MR': setCalcDisplay(String(calcMemory)); setCalcExpression(String(calcMemory)); break;
+      case 'M+': setCalcMemory(calcMemory + num); break;
+      case 'M-': setCalcMemory(calcMemory - num); break;
+    }
   };
 
   // Render Tool Content
@@ -700,37 +953,302 @@ ${slides.map((slide, i) => `
 
       case 'pdftools':
         return (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📑</div>
-            <h3 className="text-xl font-bold mb-2">PDF Tools Coming Soon!</h3>
-            <p className="text-gray-400">Merge, split, and compress PDFs - available soon</p>
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center">
+              <input
+                type="file"
+                accept=".pdf"
+                multiple
+                onChange={handlePdfFileSelect}
+                className="hidden"
+                id="pdf-input"
+              />
+              <label htmlFor="pdf-input" className="cursor-pointer">
+                <div className="text-4xl mb-2">📄</div>
+                <p className="text-gray-400">Click to select PDF files</p>
+                <p className="text-gray-500 text-sm">Select multiple PDFs to merge</p>
+              </label>
+            </div>
+
+            {pdfFiles.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm text-gray-400">Selected Files ({pdfFiles.length}):</h4>
+                {pdfFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
+                    <span className="text-sm truncate">{file.name}</span>
+                    <button
+                      onClick={() => removePdfFile(index)}
+                      className="text-red-400 hover:text-red-300 ml-2"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={mergePdfs}
+              disabled={pdfFiles.length < 2 || pdfMerging}
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed py-3 rounded-xl font-bold transition"
+            >
+              {pdfMerging ? 'Merging...' : 'Merge PDFs'}
+            </button>
+
+            {mergedPdfUrl && (
+              <a
+                href={mergedPdfUrl}
+                download="merged.pdf"
+                className="block w-full bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold text-center transition"
+              >
+                Download Merged PDF
+              </a>
+            )}
+
+            <button
+              onClick={() => { setPdfFiles([]); setMergedPdfUrl(null); }}
+              className="w-full border border-gray-600 hover:border-gray-500 py-2 rounded-lg text-sm transition"
+            >
+              Clear All
+            </button>
           </div>
         );
 
       case 'flashcards':
         return (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🃏</div>
-            <h3 className="text-xl font-bold mb-2">Flashcard Maker Coming Soon!</h3>
-            <p className="text-gray-400">Create and study flashcards - available soon</p>
+          <div className="space-y-4">
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setFlashcardMode('create')}
+                className={`flex-1 py-2 rounded-lg font-medium transition ${flashcardMode === 'create' ? 'bg-orange-500' : 'bg-gray-700 hover:bg-gray-600'}`}
+              >
+                Create Cards
+              </button>
+              <button
+                onClick={() => { setFlashcardMode('study'); setCurrentCard(0); setIsFlipped(false); }}
+                disabled={flashcards.length === 0}
+                className={`flex-1 py-2 rounded-lg font-medium transition ${flashcardMode === 'study' ? 'bg-orange-500' : 'bg-gray-700 hover:bg-gray-600'} disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Study ({flashcards.length})
+              </button>
+            </div>
+
+            {flashcardMode === 'create' ? (
+              <div className="space-y-4">
+                <input
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+                  placeholder="Front (Question)"
+                  value={newCard.front}
+                  onChange={(e) => setNewCard({...newCard, front: e.target.value})}
+                />
+                <input
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500"
+                  placeholder="Back (Answer)"
+                  value={newCard.back}
+                  onChange={(e) => setNewCard({...newCard, back: e.target.value})}
+                />
+                <button
+                  onClick={addFlashcard}
+                  disabled={!newCard.front.trim() || !newCard.back.trim()}
+                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed py-3 rounded-xl font-bold transition"
+                >
+                  Add Card
+                </button>
+
+                {flashcards.length > 0 && (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <h4 className="text-sm text-gray-400">Your Cards:</h4>
+                    {flashcards.map((card, i) => (
+                      <div key={card.id} className="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
+                        <span className="text-sm truncate">{i + 1}. {card.front}</span>
+                        <button
+                          onClick={() => deleteFlashcard(card.id)}
+                          className="text-red-400 hover:text-red-300 ml-2"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {flashcards.length > 0 ? (
+                  <>
+                    <div
+                      onClick={() => setIsFlipped(!isFlipped)}
+                      className="bg-gray-700 rounded-xl p-8 min-h-48 flex items-center justify-center cursor-pointer hover:bg-gray-650 transition"
+                    >
+                      <div className="text-center">
+                        <p className="text-xs text-gray-500 mb-2">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
+                        <p className="text-xl font-medium">
+                          {isFlipped ? flashcards[currentCard]?.back : flashcards[currentCard]?.front}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-4">Click to flip</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={prevCard}
+                        className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-gray-400">{currentCard + 1} / {flashcards.length}</span>
+                      <button
+                        onClick={nextCard}
+                        className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-center text-gray-400 py-8">No cards yet. Create some first!</p>
+                )}
+              </div>
+            )}
+            <p className="text-gray-500 text-sm text-center">Cards are saved automatically in your browser.</p>
           </div>
         );
 
       case 'codeformat':
         return (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">💻</div>
-            <h3 className="text-xl font-bold mb-2">Code Formatter Coming Soon!</h3>
-            <p className="text-gray-400">Beautify Python, Java, JS code - available soon</p>
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              {['javascript', 'python', 'java', 'html', 'css'].map(lang => (
+                <button
+                  key={lang}
+                  onClick={() => setCodeLanguage(lang)}
+                  className={`px-3 py-1 rounded-lg text-sm capitalize transition ${codeLanguage === lang ? 'bg-orange-500' : 'bg-gray-700 hover:bg-gray-600'}`}
+                >
+                  {lang}
+                </button>
+              ))}
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Paste your code:</label>
+              <textarea
+                className="w-full h-40 bg-gray-700 border border-gray-600 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-orange-500"
+                placeholder="Paste your messy code here..."
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+              />
+            </div>
+            <button
+              onClick={formatCode}
+              disabled={!codeInput.trim()}
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed py-3 rounded-xl font-bold transition"
+            >
+              Format Code
+            </button>
+            {codeOutput && (
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Formatted code:</label>
+                <div className="relative">
+                  <pre className="w-full h-40 bg-gray-700 border border-gray-600 rounded-xl p-4 font-mono text-sm overflow-auto whitespace-pre">
+                    {codeOutput}
+                  </pre>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(codeOutput)}
+                    className="absolute top-2 right-2 bg-gray-600 hover:bg-gray-500 px-3 py-1 rounded text-xs transition"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
+            <p className="text-gray-500 text-sm">Basic formatting with proper indentation. For advanced formatting, use specialized tools.</p>
           </div>
         );
 
       case 'calculator':
         return (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔢</div>
-            <h3 className="text-xl font-bold mb-2">Scientific Calculator Coming Soon!</h3>
-            <p className="text-gray-400">Advanced math calculations - available soon</p>
+          <div className="space-y-4">
+            <div className="bg-gray-700 p-4 rounded-xl">
+              <div className="text-right text-gray-400 text-sm h-6 overflow-hidden">{calcExpression || ' '}</div>
+              <div className="text-right text-3xl font-bold text-white overflow-hidden">{calcDisplay}</div>
+            </div>
+
+            {/* Memory buttons */}
+            <div className="grid grid-cols-4 gap-2">
+              {['MC', 'MR', 'M+', 'M-'].map(btn => (
+                <button
+                  key={btn}
+                  onClick={() => handleMemory(btn)}
+                  className="bg-gray-600 hover:bg-gray-500 py-2 rounded-lg text-sm font-medium transition"
+                >
+                  {btn}
+                </button>
+              ))}
+            </div>
+
+            {/* Scientific functions */}
+            <div className="grid grid-cols-5 gap-2">
+              {['sin', 'cos', 'tan', 'log', 'ln', 'sqrt', 'square', 'factorial', 'pi', 'e'].map(func => (
+                <button
+                  key={func}
+                  onClick={() => handleCalcFunction(func)}
+                  className="bg-gray-600 hover:bg-gray-500 py-2 rounded-lg text-xs font-medium transition"
+                >
+                  {func === 'square' ? 'x^2' : func === 'factorial' ? 'n!' : func === 'pi' ? 'pi' : func}
+                </button>
+              ))}
+            </div>
+
+            {/* Number pad and operators */}
+            <div className="grid grid-cols-4 gap-2">
+              {['7', '8', '9', '÷', '4', '5', '6', '×', '1', '2', '3', '-', '0', '.', '^', '+'].map(btn => (
+                <button
+                  key={btn}
+                  onClick={() => ['÷', '×', '-', '+', '^'].includes(btn) ? handleCalcOperator(btn) : handleCalcInput(btn)}
+                  className={`py-3 rounded-lg font-bold text-lg transition ${['÷', '×', '-', '+', '^'].includes(btn) ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-700 hover:bg-gray-600'}`}
+                >
+                  {btn}
+                </button>
+              ))}
+              <button
+                onClick={clearCalc}
+                className="bg-red-500 hover:bg-red-600 py-3 rounded-lg font-bold transition"
+              >
+                C
+              </button>
+              <button
+                onClick={() => setCalcDisplay(calcDisplay.slice(0, -1) || '0')}
+                className="bg-gray-600 hover:bg-gray-500 py-3 rounded-lg font-bold transition"
+              >
+                DEL
+              </button>
+              <button
+                onClick={() => handleCalcInput('(')}
+                className="bg-gray-700 hover:bg-gray-600 py-3 rounded-lg font-bold transition"
+              >
+                (
+              </button>
+              <button
+                onClick={() => handleCalcInput(')')}
+                className="bg-gray-700 hover:bg-gray-600 py-3 rounded-lg font-bold transition"
+              >
+                )
+              </button>
+            </div>
+
+            <button
+              onClick={calculateResult}
+              className="w-full bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold text-xl transition"
+            >
+              =
+            </button>
+
+            {calcHistory.length > 0 && (
+              <div className="bg-gray-700 p-3 rounded-lg max-h-32 overflow-y-auto">
+                <p className="text-xs text-gray-400 mb-2">History:</p>
+                {calcHistory.slice(-5).reverse().map((item, i) => (
+                  <div key={i} className="text-sm text-gray-300">{item.expr} = {item.result}</div>
+                ))}
+              </div>
+            )}
           </div>
         );
 
