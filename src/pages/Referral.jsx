@@ -163,7 +163,7 @@ const Referral = () => {
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <Link to="/tools" className="text-orange-400 hover:text-orange-300 text-sm font-medium transition">Free Tools</Link>
-            <span className="text-green-400 text-sm font-medium">💰 Earn $50+</span>
+            <span className="text-green-400 text-sm font-medium">💰 Earn $950</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
@@ -178,7 +178,7 @@ const Referral = () => {
           <div className="md:hidden mt-4 pb-2 border-t border-gray-800 pt-4 flex flex-col gap-3">
             <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Home</Link>
             <Link to="/tools" onClick={() => setMobileMenuOpen(false)} className="text-orange-400 hover:text-orange-300 text-sm font-medium transition px-2 py-1">Free Tools</Link>
-            <span className="text-green-400 text-sm font-medium px-2 py-1">💰 Earn $50+</span>
+            <span className="text-green-400 text-sm font-medium px-2 py-1">💰 Earn $950</span>
           </div>
         )}
       </nav>

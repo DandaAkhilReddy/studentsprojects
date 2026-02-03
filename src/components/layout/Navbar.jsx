@@ -20,7 +20,7 @@ const Navbar = ({ onGetStarted }) => {
             Free Tools
           </Link>
           <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition flex items-center gap-1">
-            💰 Earn $50+
+            💰 Earn $950
           </Link>
         </div>
         <div className="flex items-center gap-4">
@@ -42,7 +42,7 @@ const Navbar = ({ onGetStarted }) => {
           <a href="#projects" onClick={() => setMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Trending Projects</a>
           <a href="#reviews" onClick={() => setMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Reviews</a>
           <Link to="/tools" onClick={() => setMenuOpen(false)} className="text-orange-400 hover:text-orange-300 text-sm font-medium transition px-2 py-1">Free Tools</Link>
-          <Link to="/referral" onClick={() => setMenuOpen(false)} className="text-green-400 hover:text-green-300 text-sm font-medium transition px-2 py-1">💰 Earn $50+</Link>
+          <Link to="/referral" onClick={() => setMenuOpen(false)} className="text-green-400 hover:text-green-300 text-sm font-medium transition px-2 py-1">💰 Earn $950</Link>
           <a href="mailto:info@agentchains.ai" className="text-gray-400 hover:text-white text-sm transition px-2 py-1 lg:hidden">info@agentchains.ai</a>
         </div>
       )}

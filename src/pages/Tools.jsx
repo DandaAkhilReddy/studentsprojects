@@ -1532,7 +1532,7 @@ ${slides.map((slide, i) => `
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <span className="text-orange-400 text-sm font-medium">Free Tools</span>
-            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $50+</Link>
+            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $950</Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium hidden sm:inline">100% FREE</span>
@@ -1548,7 +1548,7 @@ ${slides.map((slide, i) => `
           <div className="md:hidden mt-4 pb-2 border-t border-gray-800 pt-4 flex flex-col gap-3">
             <Link to="/" onClick={() => setToolsMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Home</Link>
             <span className="text-orange-400 text-sm font-medium px-2 py-1">Free Tools</span>
-            <Link to="/referral" onClick={() => setToolsMenuOpen(false)} className="text-green-400 hover:text-green-300 text-sm font-medium transition px-2 py-1">💰 Earn $50+</Link>
+            <Link to="/referral" onClick={() => setToolsMenuOpen(false)} className="text-green-400 hover:text-green-300 text-sm font-medium transition px-2 py-1">💰 Earn $950</Link>
           </div>
         )}
       </header>
