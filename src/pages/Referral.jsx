@@ -1,66 +1,141 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import {
+  registerReferrer,
+  useReferralCode,
+  validateReferralCode,
+  getReferrerStats
+} from '../services/referralService';
 
 const Referral = () => {
+  // Registration form state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    message: ''
+    phone: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState(null);
+  const [referrerData, setReferrerData] = useState(null);
 
-  const handleSubmit = async (e) => {
+  // Friend's referral code form state
+  const [friendForm, setFriendForm] = useState({
+    code: '',
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const [isValidating, setIsValidating] = useState(false);
+  const [codeValidation, setCodeValidation] = useState(null);
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState('become'); // 'become' or 'use'
+
+  // Handle registration form submission
+  const handleRegister = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: 'f2a23d52-502f-45ee-a3a6-5b1269fad816',
-          subject: 'New Referral Partner Sign-up - AgentChains',
-          from_name: 'AgentChains Referral Program',
-          ...formData,
-          type: 'Referral Partner Application'
-        })
-      });
+      const result = await registerReferrer(formData.name, formData.email, formData.phone);
 
-      if (response.ok) {
-        toast.success('Welcome to the referral program! Check your email for next steps.');
-        setFormData({ name: '', email: '', phone: '', message: '' });
+      if (result.success) {
+        setGeneratedCode(result.data.code);
+        setReferrerData(result.data);
+
+        if (result.isExisting) {
+          toast.success('Welcome back! Here\'s your existing referral code.');
+        } else {
+          toast.success('You\'re now a referral partner! Share your code to earn $50 per referral.');
+        }
       } else {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(result.error || 'Something went wrong. Please try again.');
       }
     } catch (error) {
-      toast.error('Network error. Please try again.');
+      console.error('Registration error:', error);
+      toast.error('Network error. Please check your connection and try again.');
     }
 
     setIsSubmitting(false);
   };
 
+  // Handle code validation
+  const handleValidateCode = async () => {
+    if (!friendForm.code.trim()) {
+      toast.error('Please enter a referral code');
+      return;
+    }
+
+    setIsValidating(true);
+    const result = await validateReferralCode(friendForm.code);
+    setCodeValidation(result);
+
+    if (result.valid) {
+      toast.success(`Valid code from ${result.referrer.name}! You'll both get $50.`);
+    } else {
+      toast.error(result.error || 'Invalid referral code');
+    }
+
+    setIsValidating(false);
+  };
+
+  // Handle friend form submission
+  const handleUseFriendCode = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const result = await useReferralCode(
+        friendForm.code,
+        friendForm.name,
+        friendForm.email,
+        friendForm.phone
+      );
+
+      if (result.success) {
+        toast.success(`Awesome! You and ${result.data.referrerName} will both receive $50!`);
+        setFriendForm({ code: '', name: '', email: '', phone: '' });
+        setCodeValidation(null);
+      } else {
+        toast.error(result.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error using referral code:', error);
+      toast.error('Network error. Please check your connection and try again.');
+    }
+
+    setIsSubmitting(false);
+  };
+
+  // Copy code to clipboard
+  const copyCode = () => {
+    if (generatedCode) {
+      navigator.clipboard.writeText(generatedCode);
+      toast.success('Code copied to clipboard!');
+    }
+  };
+
   const faqs = [
     {
-      q: "Do I need to be a customer to earn referral money?",
-      a: "No! Anyone can earn $100 per referral. You don't need to use our services to participate."
+      q: "How does the referral program work?",
+      a: "Register to get your unique code. Share it with friends. When they sign up using your code, you BOTH get $50 instantly!"
     },
     {
-      q: "When do I get paid?",
-      a: "You get paid once your referral completes their payment. We'll send you the $100 within 24-48 hours."
+      q: "Do I need to be a customer to earn referral money?",
+      a: "No! Anyone can register and earn $50 per referral. You don't need to use our services to participate."
+    },
+    {
+      q: "When do we get paid?",
+      a: "Both you and your friend receive $50 once we verify the referral. Payment is processed within 24-48 hours."
     },
     {
       q: "Is there a limit to how many people I can refer?",
-      a: "No limit! Refer as many people as you want. Each successful referral = $100 in your pocket."
+      a: "No limit! Refer as many people as you want. Each successful referral = $50 for you and $50 for your friend."
     },
     {
-      q: "What are the two payout options?",
-      a: "Option 1: Your referral pays full price ($399) and we pay you $100 directly. Option 2: Your referral pays $299 (discounted) and pays you $100 directly."
-    },
-    {
-      q: "How do I track my referrals?",
-      a: "After signing up, you'll receive a unique referral code. We'll notify you via email whenever someone uses your code."
+      q: "What about weekly projects?",
+      a: "Referrals get an additional 20% discount on weekly project subscriptions!"
     }
   ];
 
@@ -76,7 +151,7 @@ const Referral = () => {
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <Link to="/tools" className="text-orange-400 hover:text-orange-300 text-sm font-medium transition">Free Tools</Link>
-            <span className="text-green-400 text-sm font-medium">💰 Earn $100</span>
+            <span className="text-green-400 text-sm font-medium">💰 Earn $50</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
@@ -85,250 +160,324 @@ const Referral = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center relative overflow-hidden">
+      <section className="py-16 px-4 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20"></div>
         <div className="relative max-w-4xl mx-auto">
           <div className="inline-block bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium mb-6">
-            💰 Referral Program
+            💰 Referral Program — Everyone Wins!
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Earn <span className="text-green-400">$100</span> For Every Referral
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            You Get <span className="text-green-400">$50</span> + Friend Gets <span className="text-green-400">$50</span>
           </h1>
           <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-            Even if you're not our customer — refer a friend, and when they pay, <span className="text-green-400 font-bold">you get $100 cash</span>.
+            Share your unique code with friends. When they sign up, <span className="text-green-400 font-bold">BOTH of you get $50 instantly</span>.
           </p>
-          <p className="text-lg text-gray-400 mb-8">
-            No limits. No strings attached. Real money in your pocket.
+          <p className="text-lg text-gray-400 mb-6">
+            Plus: Referrals get <span className="text-yellow-400 font-bold">20% OFF</span> on weekly projects!
           </p>
-          <a href="#signup" className="inline-block bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 py-4 rounded-xl font-bold text-lg transition shadow-lg shadow-green-500/25">
-            Start Earning Now →
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => setActiveTab('become')}
+              className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === 'become' ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+            >
+              Become a Referrer
+            </button>
+            <button
+              onClick={() => setActiveTab('use')}
+              className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === 'use' ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+            >
+              I Have a Code
+            </button>
+          </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-16 px-4 border-t border-gray-800">
+      <section className="py-12 px-4 border-t border-gray-800">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
-              <h3 className="text-xl font-bold mb-2">Sign Up & Get Your Code</h3>
-              <p className="text-gray-400">Fill out the form below and receive your unique referral code instantly via email.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
-              <h3 className="text-xl font-bold mb-2">Share With Friends</h3>
-              <p className="text-gray-400">Share your code with classmates, friends, or anyone who needs project help.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">$</div>
-              <h3 className="text-xl font-bold mb-2">Get Paid $100</h3>
-              <p className="text-gray-400">When your referral pays for their project, you receive $100. Simple as that!</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Two Payout Options */}
-      <section className="py-16 px-4 bg-gray-800/30 border-t border-gray-800">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">Choose Your Payout Option</h2>
-          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">Your referral saves money, and you get paid. Everyone wins!</p>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Option A */}
-            <div className="bg-gradient-to-b from-gray-800 to-gray-800/50 rounded-2xl p-8 border border-gray-700 hover:border-green-500/50 transition">
-              <div className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium inline-block mb-4">Option A</div>
-              <h3 className="text-2xl font-bold mb-4">We Pay You Directly</h3>
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Your referral pays <span className="font-bold">$399</span> (full price)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>We send you <span className="font-bold text-green-400">$100</span> within 48 hours</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Payment via PayPal, Venmo, Zelle, or bank transfer</span>
-                </div>
-              </div>
-              <div className="bg-gray-700/50 rounded-xl p-4 text-center">
-                <p className="text-sm text-gray-400">Your earnings</p>
-                <p className="text-3xl font-bold text-green-400">$100</p>
-              </div>
-            </div>
-
-            {/* Option B */}
-            <div className="bg-gradient-to-b from-gray-800 to-gray-800/50 rounded-2xl p-8 border border-orange-500/50 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">POPULAR</div>
-              <div className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-sm font-medium inline-block mb-4">Option B</div>
-              <h3 className="text-2xl font-bold mb-4">Collect From Your Referral</h3>
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-orange-400">✓</span>
-                  <span>Your referral pays only <span className="font-bold text-orange-400">$299</span> (saves $100!)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-orange-400">✓</span>
-                  <span>You collect <span className="font-bold text-green-400">$100</span> directly from them</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-orange-400">✓</span>
-                  <span>They save money, you earn money — win-win!</span>
-                </div>
-              </div>
-              <div className="bg-gray-700/50 rounded-xl p-4 text-center">
-                <p className="text-sm text-gray-400">Your earnings</p>
-                <p className="text-3xl font-bold text-green-400">$100</p>
-                <p className="text-xs text-orange-400 mt-1">+ Your friend saves $100</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits */}
-      <section className="py-16 px-4 border-t border-gray-800">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Join Our Referral Program?</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">How It Works</h2>
           <div className="grid md:grid-cols-4 gap-6">
-            <div className="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
-              <div className="text-4xl mb-3">💵</div>
-              <h3 className="font-bold mb-2">Real Cash</h3>
-              <p className="text-sm text-gray-400">Not credits or discounts — actual money in your account</p>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">1</div>
+              <h3 className="font-bold mb-1">Register</h3>
+              <p className="text-sm text-gray-400">Sign up to get your unique referral code</p>
             </div>
-            <div className="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
-              <div className="text-4xl mb-3">🚫</div>
-              <h3 className="font-bold mb-2">No Purchase Required</h3>
-              <p className="text-sm text-gray-400">You don't need to buy anything to start earning</p>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">2</div>
+              <h3 className="font-bold mb-1">Share</h3>
+              <p className="text-sm text-gray-400">Share your code with friends who need project help</p>
             </div>
-            <div className="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
-              <div className="text-4xl mb-3">♾️</div>
-              <h3 className="font-bold mb-2">Unlimited Referrals</h3>
-              <p className="text-sm text-gray-400">No cap on earnings — refer 10 friends, earn $1,000</p>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">3</div>
+              <h3 className="font-bold mb-1">Friend Signs Up</h3>
+              <p className="text-sm text-gray-400">They enter your code when signing up</p>
             </div>
-            <div className="bg-gray-800/50 rounded-xl p-6 text-center border border-gray-700">
-              <div className="text-4xl mb-3">⚡</div>
-              <h3 className="font-bold mb-2">Fast Payment</h3>
-              <p className="text-sm text-gray-400">Get paid within 24-48 hours of referral's payment</p>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">$</div>
+              <h3 className="font-bold mb-1">Both Get $50!</h3>
+              <p className="text-sm text-gray-400">You and your friend each receive $50</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Main Content - Tab Based */}
+      <section className="py-12 px-4 border-t border-gray-800">
+        <div className="max-w-xl mx-auto">
+          {/* Become a Referrer Tab */}
+          {activeTab === 'become' && (
+            <div>
+              {!generatedCode ? (
+                <>
+                  <h2 className="text-2xl font-bold text-center mb-2">Become a Referral Partner</h2>
+                  <p className="text-gray-400 text-center mb-8">Register to get your unique code and start earning</p>
+
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="john@university.edu"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Phone Number (for payment)</label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 py-4 rounded-xl font-bold text-lg transition"
+                    >
+                      {isSubmitting ? 'Generating Your Code...' : 'Get My Referral Code'}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div className="text-center">
+                  <div className="bg-green-500/20 text-green-400 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">✓</div>
+                  <h2 className="text-2xl font-bold mb-2">You're In!</h2>
+                  <p className="text-gray-400 mb-6">Share this code with your friends</p>
+
+                  <div className="bg-gray-800 rounded-2xl p-6 mb-6">
+                    <p className="text-sm text-gray-400 mb-2">Your Referral Code</p>
+                    <div className="flex items-center justify-center gap-4">
+                      <span className="text-4xl font-bold text-green-400 tracking-wider">{generatedCode}</span>
+                      <button
+                        onClick={copyCode}
+                        className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-800/50 rounded-xl p-4 mb-6 text-left">
+                    <h3 className="font-bold mb-2">When your friend uses your code:</h3>
+                    <ul className="space-y-2 text-sm text-gray-300">
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-400">✓</span>
+                        You get <span className="font-bold text-green-400">$50</span> instantly
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-400">✓</span>
+                        Your friend gets <span className="font-bold text-green-400">$50</span> instantly
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-yellow-400">★</span>
+                        Friend gets <span className="font-bold text-yellow-400">20% off</span> weekly projects
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        const text = `Use my referral code ${generatedCode} at AgentChains.ai and we BOTH get $50! Plus you get 20% off weekly projects. Sign up here: ${window.location.href}`;
+                        navigator.clipboard.writeText(text);
+                        toast.success('Share message copied!');
+                      }}
+                      className="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-medium transition"
+                    >
+                      Copy Share Message
+                    </button>
+                    <button
+                      onClick={() => {
+                        setGeneratedCode(null);
+                        setReferrerData(null);
+                        setFormData({ name: '', email: '', phone: '' });
+                      }}
+                      className="px-4 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl transition"
+                    >
+                      New
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Use a Code Tab */}
+          {activeTab === 'use' && (
+            <div>
+              <h2 className="text-2xl font-bold text-center mb-2">Have a Referral Code?</h2>
+              <p className="text-gray-400 text-center mb-8">Enter it below to get your $50 reward + 20% off weekly projects</p>
+
+              <form onSubmit={handleUseFriendCode} className="space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">Referral Code *</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      value={friendForm.code}
+                      onChange={(e) => {
+                        setFriendForm({ ...friendForm, code: e.target.value.toUpperCase() });
+                        setCodeValidation(null);
+                      }}
+                      className="flex-1 bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition uppercase tracking-wider"
+                      placeholder="REF-XXXXXX"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleValidateCode}
+                      disabled={isValidating || !friendForm.code.trim()}
+                      className="bg-gray-600 hover:bg-gray-500 disabled:opacity-50 px-4 rounded-xl transition"
+                    >
+                      {isValidating ? '...' : 'Check'}
+                    </button>
+                  </div>
+                  {codeValidation && (
+                    <p className={`text-sm mt-2 ${codeValidation.valid ? 'text-green-400' : 'text-red-400'}`}>
+                      {codeValidation.valid ? `✓ Valid code from ${codeValidation.referrer.name}` : `✗ ${codeValidation.error}`}
+                    </p>
+                  )}
+                </div>
+
+                {codeValidation?.valid && (
+                  <>
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                      <p className="text-green-400 text-sm">
+                        Code verified! Complete the form below to claim your rewards.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Your Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={friendForm.name}
+                        onChange={(e) => setFriendForm({ ...friendForm, name: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="Jane Smith"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Your Email *</label>
+                      <input
+                        type="email"
+                        required
+                        value={friendForm.email}
+                        onChange={(e) => setFriendForm({ ...friendForm, email: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="jane@university.edu"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-2">Phone (optional)</label>
+                      <input
+                        type="tel"
+                        value={friendForm.phone}
+                        onChange={(e) => setFriendForm({ ...friendForm, phone: e.target.value })}
+                        className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 py-4 rounded-xl font-bold text-lg transition"
+                    >
+                      {isSubmitting ? 'Processing...' : 'Claim My $50 Reward'}
+                    </button>
+                  </>
+                )}
+              </form>
+
+              <div className="mt-8 p-4 bg-gray-800/50 rounded-xl">
+                <h3 className="font-bold mb-2">What you get:</h3>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-400">💵</span>
+                    <span className="font-bold text-green-400">$50</span> instant reward
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-400">⭐</span>
+                    <span className="font-bold text-yellow-400">20% discount</span> on weekly projects
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-blue-400">🎁</span>
+                    Priority support and faster delivery
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Earnings Calculator */}
-      <section className="py-16 px-4 bg-gradient-to-r from-green-900/30 via-emerald-900/30 to-green-900/30 border-t border-gray-800">
+      <section className="py-12 px-4 bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-8">Calculate Your Earnings</h2>
-          <div className="grid grid-cols-4 gap-4 mb-8">
+          <h2 className="text-2xl font-bold mb-6">Calculate Your Earnings</h2>
+          <div className="grid grid-cols-4 gap-4 mb-6">
             {[1, 3, 5, 10].map(num => (
-              <div key={num} className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+              <div key={num} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <p className="text-sm text-gray-400 mb-1">{num} Referral{num > 1 ? 's' : ''}</p>
-                <p className="text-3xl font-bold text-green-400">${num * 100}</p>
+                <p className="text-2xl font-bold text-green-400">${num * 50}</p>
               </div>
             ))}
           </div>
           <p className="text-gray-400">
-            Imagine referring just <span className="text-white font-bold">5 classmates</span> — that's <span className="text-green-400 font-bold">$500</span> extra in your pocket!
-          </p>
-        </div>
-      </section>
-
-      {/* Sign Up Form */}
-      <section id="signup" className="py-16 px-4 border-t border-gray-800">
-        <div className="max-w-xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">Join the Referral Program</h2>
-          <p className="text-gray-400 text-center mb-8">Sign up now and get your unique referral code instantly</p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Full Name *</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Email Address *</label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
-                placeholder="john@university.edu"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Phone Number (for payment)</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">How will you share referrals? (optional)</label>
-              <textarea
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full bg-gray-700/50 border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition h-24"
-                placeholder="e.g., I'll share with my study group, post on social media..."
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 py-4 rounded-xl font-bold text-lg transition"
-            >
-              {isSubmitting ? 'Submitting...' : 'Get My Referral Code →'}
-            </button>
-          </form>
-
-          <p className="text-center text-gray-500 text-sm mt-4">
-            You'll receive your unique referral code via email within minutes
+            Refer <span className="text-white font-bold">10 friends</span> = <span className="text-green-400 font-bold">$500</span> for you + <span className="text-green-400 font-bold">$500</span> for them!
           </p>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="py-16 px-4 bg-gray-800/30 border-t border-gray-800">
+      <section className="py-12 px-4 bg-gray-800/30 border-t border-gray-800">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div key={i} className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <h3 className="font-bold text-lg mb-2">{faq.q}</h3>
-                <p className="text-gray-400">{faq.a}</p>
+              <div key={i} className="bg-gray-800/50 rounded-xl p-5 border border-gray-700">
+                <h3 className="font-bold mb-2">{faq.q}</h3>
+                <p className="text-gray-400 text-sm">{faq.a}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 px-4 text-center border-t border-gray-800">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold mb-4">Ready to Start Earning?</h2>
-          <p className="text-xl text-gray-400 mb-8">
-            Join hundreds of students already earning with our referral program
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#signup" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 px-8 py-4 rounded-xl font-bold text-lg transition">
-              Sign Up Now
-            </a>
-            <Link to="/" className="border border-gray-600 hover:border-gray-500 px-8 py-4 rounded-xl font-bold text-lg transition">
-              Learn About Our Services
-            </Link>
           </div>
         </div>
       </section>

@@ -17,7 +17,7 @@ const Navbar = ({ onGetStarted }) => {
             Free Tools
           </Link>
           <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition flex items-center gap-1">
-            💰 Earn $100
+            💰 Earn $50
           </Link>
         </div>
         <div className="flex items-center gap-4">

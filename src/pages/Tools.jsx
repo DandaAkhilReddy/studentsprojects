@@ -1276,7 +1276,7 @@ ${slides.map((slide, i) => `
           <div className="hidden md:flex items-center gap-4">
             <Link to="/" className="text-gray-400 hover:text-white text-sm transition">Home</Link>
             <span className="text-orange-400 text-sm font-medium">Free Tools</span>
-            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $100</Link>
+            <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $50</Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">100% FREE</span>
