@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PDFDocument } from 'pdf-lib';
 
 const Tools = () => {
+  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
   const [activeTool, setActiveTool] = useState(null);
 
   // Tool States
@@ -1534,10 +1535,22 @@ ${slides.map((slide, i) => `
             <Link to="/referral" className="text-green-400 hover:text-green-300 text-sm font-medium transition">💰 Earn $50+</Link>
           </div>
           <div className="flex items-center gap-4">
-            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">100% FREE</span>
+            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium hidden sm:inline">100% FREE</span>
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
+            <button onClick={() => setToolsMenuOpen(!toolsMenuOpen)} className="md:hidden flex flex-col gap-1.5 p-1">
+              <span className={`block w-6 h-0.5 bg-white transition-all ${toolsMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-white transition-all ${toolsMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-white transition-all ${toolsMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
           </div>
         </div>
+        {toolsMenuOpen && (
+          <div className="md:hidden mt-4 pb-2 border-t border-gray-800 pt-4 flex flex-col gap-3">
+            <Link to="/" onClick={() => setToolsMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Home</Link>
+            <span className="text-orange-400 text-sm font-medium px-2 py-1">Free Tools</span>
+            <Link to="/referral" onClick={() => setToolsMenuOpen(false)} className="text-green-400 hover:text-green-300 text-sm font-medium transition px-2 py-1">💰 Earn $50+</Link>
+          </div>
+        )}
       </header>
 
       {/* Hero */}

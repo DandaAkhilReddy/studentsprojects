@@ -10,6 +10,7 @@ import {
 
 const Referral = () => {
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Scroll to register section if hash is present
   useEffect(() => {
@@ -166,8 +167,20 @@ const Referral = () => {
           </div>
           <div className="flex items-center gap-4">
             <Link to="/" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-5 py-2 rounded-lg font-semibold text-sm transition">Get Project Help</Link>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden flex flex-col gap-1.5 p-1">
+              <span className={`block w-6 h-0.5 bg-white transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-white transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-white transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
           </div>
         </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 pb-2 border-t border-gray-800 pt-4 flex flex-col gap-3">
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-white text-sm transition px-2 py-1">Home</Link>
+            <Link to="/tools" onClick={() => setMobileMenuOpen(false)} className="text-orange-400 hover:text-orange-300 text-sm font-medium transition px-2 py-1">Free Tools</Link>
+            <span className="text-green-400 text-sm font-medium px-2 py-1">💰 Earn $50+</span>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -465,7 +478,7 @@ const Referral = () => {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-6">Calculate Your Earnings</h2>
           <p className="text-sm font-bold text-green-400 uppercase tracking-wider mb-3">Project Referrals</p>
-          <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             {[{n: 1, earn: 50}, {n: 3, earn: 250}, {n: 5, earn: 450}, {n: 10, earn: 950}].map(({n, earn}) => (
               <div key={n} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <p className="text-sm text-gray-400 mb-1">{n} Referral{n > 1 ? 's' : ''}</p>
@@ -474,7 +487,7 @@ const Referral = () => {
             ))}
           </div>
           <p className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-3 mt-6">Assignment Referrals</p>
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             {[{n: 1, earn: 5}, {n: 3, earn: 25}, {n: 5, earn: 45}, {n: 10, earn: 95}].map(({n, earn}) => (
               <div key={n} className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                 <p className="text-sm text-gray-400 mb-1">{n} Referral{n > 1 ? 's' : ''}</p>
